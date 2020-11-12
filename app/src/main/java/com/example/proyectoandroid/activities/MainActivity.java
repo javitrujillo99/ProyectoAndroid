@@ -30,7 +30,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    //Variables
+    //Variables hola
     private ListView listView;
     private List<Personaje> personajes;
     private MainAdapter adapter;
