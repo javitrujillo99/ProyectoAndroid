@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -103,16 +104,17 @@
             android:id="@+id/btnCrear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#F5DE00"
-            android:text="Crear"
             android:layout_marginEnd="20dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="Crear"
+            android:textColor="@color/black"
+            app:backgroundTint="#F5DE00" />
 
         <Button
             android:id="@+id/btnCancelar2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#BF0012"
+            android:backgroundTint="#BF0012"
             android:textColor="#ffffff"
             android:text="Cancelar"
             android:layout_weight="1"/>

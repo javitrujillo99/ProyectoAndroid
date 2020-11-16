@@ -14,7 +14,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.example.proyectoandroid.R;
+import com.example.proyectoandroid.activities.MainActivity;
 import com.example.proyectoandroid.adapters.MainAdapter;
+import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Personaje;
 
@@ -30,12 +32,16 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
     private EditText ataqueEspecial;
     private MainAdapter adapter;
     private Personaje personaje;
+    private MainActivity mainActivity;
+    private DragonBallSQL personajes;
 
 
-    public DialogEditarPersonajeFragment(Personaje personaje, MainAdapter adapter) {
+    public DialogEditarPersonajeFragment(Personaje personaje, MainAdapter adapter, MainActivity mainActivity, DragonBallSQL dragonBallSQL) {
         //Le paso al constructor el personaje que queremos editar y el adapter para editarlo
         this.personaje = personaje;
         this.adapter = adapter;
+        this.mainActivity = mainActivity;
+        this.personajes = dragonBallSQL;
     }
 
     @Override
@@ -69,7 +75,7 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
     }
 
     /**
-     *         //argo las características del personaje
+     * Cargo las características del personaje
      */
     private void cargarCaracteristicas() {
         imageView.setImageResource(personaje.getFoto());
@@ -94,6 +100,13 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
                 personaje.setDescripcion(descripcion.getText().toString());
                 personaje.setRaza(raza.getText().toString());
                 personaje.setAtaqueEspecial(ataqueEspecial.getText().toString());
+
+                //Actualizamos el personaje en la base de datos
+                personajes.editarPersonaje(personaje);
+
+                //Actualizamos la activity
+                mainActivity.rellenarActivity();
+
                 //Actualizamos con el adapter
                 adapter.notifyDataSetChanged();
                 dismiss(); //Cerramos el dialogo

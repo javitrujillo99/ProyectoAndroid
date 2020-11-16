@@ -8,7 +8,9 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,12 +21,14 @@ import android.widget.ListView;
 
 import com.example.proyectoandroid.R;
 import com.example.proyectoandroid.adapters.MainAdapter;
+import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.dialogs.DialogCrearPersonajeFragment;
 import com.example.proyectoandroid.dialogs.DialogEditarPersonajeFragment;
 import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,14 +41,20 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private FloatingActionButton btnCrearPersonaje;
     private static final int REQUEST_CODE_FUNCTONE = 100;
+    private SQLiteDatabase db;
+
+    //La base de datos la creo estática para que pueda acceder a ella desde la otra activity
+    public static DragonBallSQL dragonBallSQL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Quitamos el titulo de la toolbar
-        setTitle("");
+        //Inicializamos la base de datos
+        dragonBallSQL = new DragonBallSQL(this, "DragonBall.db", null, 1);
+
+        //dragonBallSQL.borrarDb("DragonBall.db");
 
         //Rellenamos el activity con el listview
         rellenarActivity();
@@ -78,43 +88,24 @@ public class MainActivity extends AppCompatActivity {
      * Método para rellenar el activity con el listview
      */
 
-    private void rellenarActivity() {
+    public void rellenarActivity() {
+        //Creamos conexion con la base de datos
+        db = dragonBallSQL.getWritableDatabase();
+
         //Insertamos el ListView en la activity
         listView = (ListView) findViewById(R.id.listView);
 
         //Creamos la lista de personajes que aparecerá en la vista
-        personajes = new ArrayList<Personaje>();
-        llenarLista((ArrayList<Personaje>) personajes);
+        this.personajes = dragonBallSQL.getListadoPersonajes();
 
         //Inyectamos el adapter
         adapter = new MainAdapter(this, R.layout.lista, personajes);
         listView.setAdapter(adapter);
+
+        //Cerramos la conexion
+        db.close();
     }
 
-    /**
-     * Método para llenar la lista
-     *
-     * @param personajes
-     */
-    private void llenarLista(ArrayList<Personaje> personajes) {
-        personajes.add(new Personaje(1, "Goku", "Son Gokū es el protagonista del manga y anime Dragon Ball creado por Akira Toriyama.", "Saiyan", "Kamehameha", R.drawable.goku, R.drawable.goku_completa));
-        personajes.add(new Personaje(2, "Gohan", "Son Gohan es un personaje del manga y anime Dragon Ball creado por Akira Toriyama. Es el primer hijo de Son Gokū y Chi-Chi", "Saiyan", "Masenko", R.drawable.gohan, R.drawable.gohan_completa));
-        personajes.add(new Personaje(3, "Goten", "Goten es un personaje ficticio de la serie de manga y anime Dragon Ball. Segundo hijo del protagonista, Goku, y Chichi/Milk.", "Saiyan", "Kamehameha", R.drawable.goten, R.drawable.goten_completa));
-        personajes.add(new Personaje(4, "Krilin", "Krilin es un personaje de la serie de manga y anime Dragon Ball. Es el primer rival en artes marciales de Son Gokū aunque luego se convierte en su mejor amigo.", "Humano", "Kienzan", R.drawable.krilin, R.drawable.krilin_completa));
-        personajes.add(new Personaje(5, "Piccolo", "Piccolo es un personaje de ficción de la serie de manga y anime Dragon Ball. Su padre, Piccolo Daimaō, surgió tras separarse de Kamisama. ", "Namekiano", "Makankosappo", R.drawable.piccolo, R.drawable.piccolo_completa));
-        personajes.add(new Personaje(6, "Trunks", "Trunks es un personaje de ficción de la serie de manga y anime Dragon Ball de Akira Toriyama. Hijo de Vegeta y Bulma", "Saiyan", "Kamehameha", R.drawable.trunks, R.drawable.trunks_completa));
-        personajes.add(new Personaje(7, "Vegeta", "Vegeta es un personaje ficticio perteneciente a la raza llamada saiyajin, del manga y anime Dragon Ball.", "Saiyan", "Final flash", R.drawable.vegeta, R.drawable.vegeta_completa));
-
-        //TODO: En vez de insertar a mano las fotos de las transformaciones, hacerlo mediante galeria
-        List<Transformacion> transformacionesGoku;
-        transformacionesGoku = personajes.get(0).getTransformaciones();
-        transformacionesGoku.add(new Transformacion("Goku Super Saiyan 1", R.drawable.goku_ssj1));
-        transformacionesGoku.add(new Transformacion("Goku Super Saiyan 2", R.drawable.goku_ssj2));
-        transformacionesGoku.add(new Transformacion("Goku Super Saiyan 3", R.drawable.goku_ssj3));
-        transformacionesGoku.add(new Transformacion("Goku Super Saiyan Dios", R.drawable.goku_ssjydios));
-        transformacionesGoku.add(new Transformacion("Goku Super Saiyan Blue", R.drawable.goku_ssjyblue));
-        personajes.get(0).setTransformaciones(transformacionesGoku);
-    }
 
     /**
      * Método para cuando pulse en las caracteristicas
@@ -124,20 +115,13 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                //Recibimos el personaje editado de la otra activity, en caso de que se haya editado
-                Personaje personajeEditado = (Personaje) getIntent().getSerializableExtra("personajeEditado");
-
-                if (personajeEditado != null && personajeEditado.getId() == personajes.get(position).getId()) {
-                    //Actualizo el personaje
-                    personajes.set(position, personajeEditado);
-                }
+                Personaje currentPersonaje = personajes.get(position);
 
                 //Creamos el Intent explicito, y le decimos que vaya desde aqui hasta la activity 2
                 Intent intent = new Intent(getApplicationContext(), ActivityPersonaje.class);
 
                 //Insertamos el personaje que de la lista (importante que implemente el Serializable)
-                intent.putExtra("personaje", personajes.get(position));
+                intent.putExtra("personaje", currentPersonaje);
 
                 //Lanzamos la activity (IMPORTANTE)
                 startActivityForResult(intent, REQUEST_CODE_FUNCTONE);
@@ -207,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
      * Creamos el personaje con el Dialog
      */
     private void crearPersonaje() {
-        DialogCrearPersonajeFragment dialog = new DialogCrearPersonajeFragment(this.adapter, this.personajes);
+        //Le paso la mainActivity para poder acceder al metodo rellenarActivity()
+        DialogCrearPersonajeFragment dialog = new DialogCrearPersonajeFragment(this.adapter, this.dragonBallSQL, this);
         dialog.show(getSupportFragmentManager(), "DialogoCrearPersonaje");
     }
 
@@ -254,12 +239,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Editamos el personaje
-     *
      * @param personaje
      */
     private void editarPersonaje(Personaje personaje) {
         //Le paso el personaje que vamos a editar y el adapter para hacer los cambios desde la clase del dialog
-        DialogEditarPersonajeFragment dialog = new DialogEditarPersonajeFragment(personaje, this.adapter);
+        DialogEditarPersonajeFragment dialog = new DialogEditarPersonajeFragment(personaje, this.adapter, this, this.dragonBallSQL);
         dialog.show(getSupportFragmentManager(), "DialogoEditarPersonaje");
     }
 
@@ -275,10 +259,15 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                personajes.remove(p);
+                dragonBallSQL.borrarPersonaje(p);
+                rellenarActivity();
+
+                //Notificamos al adapter
                 adapter.notifyDataSetChanged();
             }
         });
+
+        //Creamos y mostramos el dialogo
         AlertDialog dialog = builder.create();
         dialog.show();
     }

@@ -15,8 +15,12 @@ import android.widget.ImageView;
 
 
 import com.example.proyectoandroid.R;
+import com.example.proyectoandroid.activities.ActivityPersonaje;
+import com.example.proyectoandroid.activities.MainActivity;
 import com.example.proyectoandroid.adapters.TransformacionesAdapter;
+import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
+import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
 
 import java.util.List;
@@ -25,23 +29,21 @@ import java.util.List;
 public class DialogCrearTransformacionFragment extends DialogFragment implements InterfazDialogFragment {
 
     private TransformacionesAdapter adapter;
-    private List<Transformacion> transformaciones;
     private ImageView imagen;
     private EditText nombre;
     private Button btnAceptar;
     private Button btnCancelar;
+    private Personaje personaje;
     private Transformacion transformacion;
+    private DragonBallSQL dragonBallSQL;
+    private ActivityPersonaje activityPersonaje;
 
 
-    /**
-     * Constructor
-     * @param adapter
-     * @param transformaciones
-     */
-    public DialogCrearTransformacionFragment(TransformacionesAdapter adapter, List<Transformacion> transformaciones) {
-        // En este caso, le pasamos el adapter y la lista, para añadir la transformacion creada a ella
+    public DialogCrearTransformacionFragment(TransformacionesAdapter adapter, Personaje personaje, DragonBallSQL dragonBallSQL, ActivityPersonaje activityPersonaje) {
         this.adapter = adapter;
-        this.transformaciones = transformaciones;
+        this.personaje = personaje;
+        this.dragonBallSQL = dragonBallSQL;
+        this.activityPersonaje = activityPersonaje;
     }
 
     @Override
@@ -83,8 +85,12 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
                 //TODO: INSERTAR LA IMAGEN CON SU INT CORRESPONDIENTE
                 transformacion = new Transformacion(nombre.getText().toString(), R.drawable.predeterminado);
 
-                //Añado la transformacion a la lista
-                transformaciones.add(transformacion);
+                //Inserto la transformación en base de datos
+                dragonBallSQL.insertarTransformacion(personaje, transformacion);
+
+                //Actualizo la activity
+                activityPersonaje.actualizarTransformaciones();
+
 
                 //Actualizamos el adapter
                 adapter.notifyDataSetChanged();

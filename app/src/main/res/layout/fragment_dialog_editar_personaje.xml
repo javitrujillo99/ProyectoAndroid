@@ -103,7 +103,8 @@
             android:id="@+id/btnAceptar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#F5DE00"
+            android:backgroundTint="#F5DE00"
+            android:textColor="@color/black"
             android:text="Aceptar"
             android:layout_marginEnd="20dp"
             android:layout_weight="1"/>
@@ -112,7 +113,7 @@
             android:id="@+id/btnCancelar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#BF0012"
+            android:backgroundTint="#BF0012"
             android:textColor="#ffffff"
             android:text="Cancelar"
             android:layout_weight="1"/>

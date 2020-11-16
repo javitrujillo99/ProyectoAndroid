@@ -14,11 +14,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.example.proyectoandroid.R;
+import com.example.proyectoandroid.activities.MainActivity;
 import com.example.proyectoandroid.adapters.MainAdapter;
+import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Personaje;
-
-import java.util.List;
 
 
 public class DialogCrearPersonajeFragment extends DialogFragment implements InterfazDialogFragment {
@@ -32,17 +32,20 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
     private EditText ataqueEspecial;
     private MainAdapter adapter;
     private Personaje personaje;
-    private List<Personaje> personajes;
+    private DragonBallSQL personajes;
+    private MainActivity mainActivity;
 
     /**
      * Constructor
      * @param adapter
      * @param personajes
+     * @param mainActivity
      */
-    public DialogCrearPersonajeFragment(MainAdapter adapter, List<Personaje> personajes) {
-        // En este caso, le pasamos el adapter y la lista, para añadir el personaje creado a ella
+    public DialogCrearPersonajeFragment(MainAdapter adapter, DragonBallSQL personajes, MainActivity mainActivity) {
+        // En este caso, le pasamos el adapter y la base de datos, para añadir el personaje creado a ella
         this.adapter = adapter;
         this.personajes = personajes;
+        this.mainActivity = mainActivity;
     }
 
 
@@ -88,8 +91,11 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
                 personaje = new Personaje(nombre.getText().toString(), descripcion.getText().toString(),
                         raza.getText().toString(), ataqueEspecial.getText().toString() ,R.drawable.predeterminado, R.drawable.predeterminado);
 
-                //Añado el personaje a la lista
-                personajes.add(personaje);
+                //Inserto el personaje en base de datos
+                personajes.insertarPersonaje(personaje);
+
+                //Actualizo la activity
+                mainActivity.rellenarActivity();
 
                 //Actualizamos con el adapter
                 adapter.notifyDataSetChanged();

@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.proyectoandroid.R;
 import com.example.proyectoandroid.adapters.TransformacionesAdapter;
+import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.dialogs.DialogCrearTransformacionFragment;
 import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
@@ -38,11 +40,15 @@ public class ActivityPersonaje extends AppCompatActivity {
     private GridView gridView;
     private TransformacionesAdapter adapter;
     private static final int REQUEST_CODE = 100;
+    private DragonBallSQL dragonBallSQL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personaje);
+
+        //Inicializamos base de datos
+        this.dragonBallSQL = MainActivity.dragonBallSQL;
 
         //TODO: insertar un sonido a cada personaje
 
@@ -51,7 +57,7 @@ public class ActivityPersonaje extends AppCompatActivity {
         rellenarCaracteristicas();
 
         //Insertamos las transformaciones
-        insertarTransformaciones();
+        actualizarTransformaciones();
 
         //Cuando pulse el botón flotante, que muestre el dialogo de crear personaje
         pulsarBotonFlotante();
@@ -65,6 +71,7 @@ public class ActivityPersonaje extends AppCompatActivity {
      */
 
     private void rellenarCaracteristicas() {
+
         //Insertamos el personaje pasado por el intent
         this.personaje = (Personaje) getIntent().getSerializableExtra("personaje");
 
@@ -80,8 +87,6 @@ public class ActivityPersonaje extends AppCompatActivity {
         textViewRaza.setText("Raza: " + personaje.getRaza());
         textViewAtaqueEspecial.setText("Ataque especial: " + personaje.getAtaqueEspecial());
         textViewDescripcion.setText(personaje.getDescripcion());
-
-
     }
 
     /**
@@ -100,15 +105,16 @@ public class ActivityPersonaje extends AppCompatActivity {
      * Método para insertar las transformaciones al gridview
      */
 
-    private void insertarTransformaciones() {
+    public void actualizarTransformaciones() {
         //Insertamos el gridview
         gridView = (GridView) findViewById(R.id.gridViewTransformaciones);
 
         //Insertamos la lista de transformaciones
-        this.transformaciones = personaje.getTransformaciones();
-        adapter = new TransformacionesAdapter(getApplicationContext(), R.layout.transformaciones, transformaciones);
-        gridView.setAdapter(adapter);
+        this.transformaciones = dragonBallSQL.getListadoTransformaciones(this.personaje);
 
+        //Inyectamos el adapter
+        adapter = new TransformacionesAdapter(getApplicationContext(), R.layout.transformaciones, this.transformaciones);
+        gridView.setAdapter(adapter);
     }
 
 
@@ -132,8 +138,10 @@ public class ActivityPersonaje extends AppCompatActivity {
      */
 
     private void crearTransformacion() {
-        DialogCrearTransformacionFragment dialog = new DialogCrearTransformacionFragment(this.adapter,
-                this.transformaciones);
+        //Le paso al fragment el adapter, el personaje al que le vamos a insertar la transformacion,
+        // la base de datos y la activity para acceder al metodo actualizarTransformaciones()
+        DialogCrearTransformacionFragment dialog = new DialogCrearTransformacionFragment(this.adapter, this.personaje,
+                this.dragonBallSQL, this);
         dialog.show(getSupportFragmentManager(), "DialogoCrearTransformacion");
     }
 
