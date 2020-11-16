@@ -43,7 +43,7 @@
             <ImageView
                 android:id="@+id/nuevaFoto"
                 android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_height="match_parent"
                 android:src="@drawable/predeterminado" />
 
             <LinearLayout

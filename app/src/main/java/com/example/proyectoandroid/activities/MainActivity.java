@@ -72,16 +72,9 @@ public class MainActivity extends AppCompatActivity {
         //Agregamos el metodo para cambiar de activity
         irACaracteristicas(listView);
 
-        //TODO: SOLUCIONAR PROBLEMA DE QUE NO SE ACTUALIZAN LAS TRANSFORMACIONES AL CAMBIAR DE PANTALLA.
-        //TODO: ESTO PASA PORQUE NO LE PASAMOS LOS DATOS NUEVOS A LA ACTIVITY PRINCIPAL AL VOLVER DE LA OTRA ACTIVITY
-
         //TODO: INSERTAR IMAGEN DESDE LA GALERIA
 
         //TODO: INSERTAR AUDIO DE CADA PERSONAJE
-
-        //TODO: DIALOGFRAGMENT DE EDITAR TRANSFORMACION
-
-        //TODO: ALERTDIALOG DE BORRAR TRANSFORMACION
     }
 
     /**
@@ -242,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
      * @param personaje
      */
     private void editarPersonaje(Personaje personaje) {
-        //Le paso el personaje que vamos a editar y el adapter para hacer los cambios desde la clase del dialog
+        //Le paso el personaje que vamos a editar y los parametros necesarios
         DialogEditarPersonajeFragment dialog = new DialogEditarPersonajeFragment(personaje, this.adapter, this, this.dragonBallSQL);
         dialog.show(getSupportFragmentManager(), "DialogoEditarPersonaje");
     }

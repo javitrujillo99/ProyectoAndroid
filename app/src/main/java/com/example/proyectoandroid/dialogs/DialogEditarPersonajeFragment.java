@@ -78,7 +78,7 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
      * Cargo las características del personaje
      */
     private void cargarCaracteristicas() {
-        imageView.setImageResource(personaje.getFoto());
+        imageView.setImageResource(personaje.getFotoCompleta());
         nombre.setText(personaje.getNombre());
         descripcion.setText(personaje.getDescripcion());
         raza.setText(personaje.getRaza());

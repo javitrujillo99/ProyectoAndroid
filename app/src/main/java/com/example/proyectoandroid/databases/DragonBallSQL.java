@@ -52,11 +52,11 @@ public class DragonBallSQL extends SQLiteOpenHelper {
         //Inicializo la base de datos con algunos datos
         String sentenciaInsertPersonajes =  "INSERT INTO personajes VALUES" +
                 "(1, 'Goku', 'Son Gokū es el protagonista del manga y anime Dragon Ball creado por Akira Toriyama.', 'Saiyan', 'Kamehameha', " + R.drawable.goku + ", " + R.drawable.goku_completa + ")," +
-                "(2, 'Gohan', 'Son Gohan es un personaje del manga y anime Dragon Ball creado por Akira Toriyama. Es el primer hijo de Son Gokū y Chi-Chi', 'Saiyan', 'Masenko', " + R.drawable.gohan + ", " + R.drawable.gohan_completa + ")," +
-                "(3, 'Goten', 'Goten es un personaje ficticio de la serie de manga y anime Dragon Ball. Segundo hijo del protagonista, Goku, y Chichi/Milk.', 'Saiyan', 'Kamehameha', " + R.drawable.goten + ", " + R.drawable.goten_completa + ")," +
+                "(2, 'Gohan', 'Son Gohan es un personaje del manga y anime Dragon Ball creado por Akira Toriyama. Es el primer hijo de Son Gokū y Chi-Chi', 'Humano - Saiyan', 'Masenko', " + R.drawable.gohan + ", " + R.drawable.gohan_completa + ")," +
+                "(3, 'Goten', 'Goten es un personaje ficticio de la serie de manga y anime Dragon Ball. Segundo hijo del protagonista, Goku, y Chichi/Milk.', 'Humano - Saiyan', 'Kamehameha', " + R.drawable.goten + ", " + R.drawable.goten_completa + ")," +
                 "(4, 'Krilin', 'Krilin es un personaje de la serie de manga y anime Dragon Ball. Es el primer rival en artes marciales de Son Gokū aunque luego se convierte en su mejor amigo.', 'Humano', 'Kienzan', " + R.drawable.krilin + ", " + R.drawable.krilin_completa + ")," +
                 "(5, 'Piccolo', 'Piccolo es un personaje de ficción de la serie de manga y anime Dragon Ball. Su padre, Piccolo Daimaō, surgió tras separarse de Kamisama.', 'Namekiano', 'Makankosappo', " + R.drawable.piccolo + ", " + R.drawable.piccolo_completa + ")," +
-                "(6, 'Trunks', 'Trunks es un personaje de ficción de la serie de manga y anime Dragon Ball de Akira Toriyama. Hijo de Vegeta y Bulma.', 'Saiyan', 'Kamehameha', " + R.drawable.trunks + ", " + R.drawable.trunks_completa + ")," +
+                "(6, 'Trunks', 'Trunks es un personaje de ficción de la serie de manga y anime Dragon Ball de Akira Toriyama. Hijo de Vegeta y Bulma.', 'Humano - Saiyan', 'Kamehameha', " + R.drawable.trunks + ", " + R.drawable.trunks_completa + ")," +
                 "(7, 'Vegeta', 'Vegeta es un personaje ficticio perteneciente a la raza llamada saiyajin, del manga y anime Dragon Ball.', 'Saiyan', 'Final Flash', " + R.drawable.vegeta + ", " + R.drawable.vegeta_completa + ")" ;
 
         String sentenciaInsertTransformaciones = "INSERT INTO transformaciones VALUES" +
@@ -64,7 +64,17 @@ public class DragonBallSQL extends SQLiteOpenHelper {
                 "(2, 'Super Saiyan 2', " + R.drawable.goku_ssj2 + ", 1)," +
                 "(3, 'Super Saiyan 3', " + R.drawable.goku_ssj3 + ", 1)," +
                 "(4, 'Super Saiyan Dios', " + R.drawable.goku_ssjydios + ", 1)," +
-                "(5, 'Super Saiyan Blue', " + R.drawable.goku_ssjyblue + ", 1)";
+                "(5, 'Super Saiyan Blue', " + R.drawable.goku_ssjyblue + ", 1)," +
+                "(6, 'Super Saiyan 1 (Niño)', " + R.drawable.gohan_ssj1_peque + ", 2)," +
+                "(7, 'Super Saiyan 2 (Niño)', " + R.drawable.gohan_ssj2_peque + ", 2)," +
+                "(8, 'Super Saiyan 1 (Adulto)', " + R.drawable.gohan_ssj1 + ", 2)," +
+                "(9, 'Super Saiyan 2 (Adulto)', " + R.drawable.gohan_ssj2 + ", 2)," +
+                "(10, 'Super Saiyan', " + R.drawable.goten_ssj1 + ", 3)," +
+                "(11, 'Super Saiyan (Niño)', " + R.drawable.trunks_ssj1 + ", 6)," +
+                "(12, 'Super Saiyan (Adulto)', " + R.drawable.trunks_ssj1_adulto + ", 6)," +
+                "(13, 'Super Saiyan 1', " + R.drawable.vegeta_ssj1 + ", 7)," +
+                "(14, 'Super Saiyan 2', " + R.drawable.vegeta_ssj2 + ", 7)," +
+                "(15, 'Super Saiyan Blue', " + R.drawable.vegeta_ssj_blue + ", 7)";
 
         db.execSQL(sentenciaInsertPersonajes);
         db.execSQL(sentenciaInsertTransformaciones);
@@ -273,5 +283,38 @@ public class DragonBallSQL extends SQLiteOpenHelper {
 
         // Se devuleven los resultados
         return resultadoConsulta;
+    }
+
+    /**
+     * Método para borrar una transformacion de la base de datos
+     */
+    public void borrarTransformacion(Transformacion transformacion) {
+        db = getWritableDatabase();
+
+        //Sentencia de borrado
+        String sentenciaBorrado = "DELETE FROM transformaciones WHERE (id='" + transformacion.getId() + "');";
+
+        //Ejecutamos la consulta
+        db.execSQL(sentenciaBorrado);
+
+        // Cerramos la conexión
+        db.close();
+    }
+
+    /**
+     * Método para editar una transformacion en la base de datos
+     */
+    public void editarTransformacion(Transformacion transformacion) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            String sentenciaEditar = "UPDATE transformaciones SET nombre = '" + transformacion.getNombre()+
+                    "', foto = " + transformacion.getFoto() + " WHERE id = " + transformacion.getId() + ";";
+
+            //Ejecutamos la consulta
+            db.execSQL(sentenciaEditar);
+
+            //Cerramos la conexión
+            db.close();
+        }
     }
 }
