@@ -101,7 +101,7 @@ public class DragonBallSQL extends SQLiteOpenHelper {
     /**
      * Método para reiniciar la base de datos
      */
-    public void borrarDb(String nombreDb) {
+    public void reiniciarDb(String nombreDb) {
         this.contexto.deleteDatabase(nombreDb);
     }
 

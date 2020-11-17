@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".dialogs.DialogCrearTransformacionFragment">
+    tools:context=".dialogs.DialogEditarTransformacionFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
             android:layout_gravity="end"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Crear transformación"
+            android:text="Editar transformación"
             android:textColor="#ffffff"
             android:textSize="18dp" />
 

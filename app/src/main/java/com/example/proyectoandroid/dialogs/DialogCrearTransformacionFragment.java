@@ -16,14 +16,12 @@ import android.widget.ImageView;
 
 import com.example.proyectoandroid.R;
 import com.example.proyectoandroid.activities.ActivityPersonaje;
-import com.example.proyectoandroid.activities.MainActivity;
 import com.example.proyectoandroid.adapters.TransformacionesAdapter;
 import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
 
-import java.util.List;
 
 
 public class DialogCrearTransformacionFragment extends DialogFragment implements InterfazDialogFragment {

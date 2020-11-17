@@ -8,7 +8,9 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.ContextMenu;
@@ -32,6 +34,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class MainActivity extends AppCompatActivity {
 
     //Variables
@@ -41,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private FloatingActionButton btnCrearPersonaje;
     private static final int REQUEST_CODE_FUNCTONE = 100;
+    private final int REQUEST_CODE_PERMISOS = 101;
     private SQLiteDatabase db;
 
     //La base de datos la creo estática para que pueda acceder a ella desde la otra activity
@@ -54,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
         //Inicializamos la base de datos
         dragonBallSQL = new DragonBallSQL(this, "DragonBall.db", null, 1);
 
-        //dragonBallSQL.borrarDb("DragonBall.db");
+        //Reinicar base de datos
+        //dragonBallSQL.reiniciarDb("DragonBall.db");
 
         //Rellenamos el activity con el listview
         rellenarActivity();
@@ -74,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO: INSERTAR IMAGEN DESDE LA GALERIA
 
-        //TODO: INSERTAR AUDIO DE CADA PERSONAJE
     }
 
     /**
@@ -264,6 +269,4 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-
 }

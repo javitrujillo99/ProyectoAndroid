@@ -21,7 +21,6 @@ import com.example.proyectoandroid.R;
 import com.example.proyectoandroid.adapters.TransformacionesAdapter;
 import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.dialogs.DialogCrearTransformacionFragment;
-import com.example.proyectoandroid.dialogs.DialogEditarPersonajeFragment;
 import com.example.proyectoandroid.dialogs.DialogEditarTransformacionFragment;
 import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
