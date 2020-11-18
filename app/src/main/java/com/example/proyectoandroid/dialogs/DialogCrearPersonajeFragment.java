@@ -100,6 +100,7 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
                 personaje = new Personaje(nombre.getText().toString(), descripcion.getText().toString(),
                         raza.getText().toString(), ataqueEspecial.getText().toString(), R.drawable.predeterminado, R.drawable.predeterminado);
 
+
                 //Inserto el personaje en base de datos
                 personajes.insertarPersonaje(personaje);
 
