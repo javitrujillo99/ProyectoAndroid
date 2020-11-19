@@ -7,7 +7,7 @@ public class Transformacion implements Serializable{
 
     private int id;
     private String nombre;
-    private int foto;
+    private Object foto;
     private int id_usuario;
 
 
@@ -22,7 +22,7 @@ public class Transformacion implements Serializable{
      * @param nombre
      * @param foto
      */
-    public Transformacion(String nombre, int foto) {
+    public Transformacion(String nombre, Object foto) {
         this.nombre = nombre;
         this.foto = foto;
     }
@@ -48,11 +48,11 @@ public class Transformacion implements Serializable{
         this.nombre = nombre;
     }
 
-    public int getFoto() {
+    public Object getFoto() {
         return foto;
     }
 
-    public void setFoto(int foto) {
+    public void setFoto(Object foto) {
         this.foto = foto;
     }
 

@@ -1,17 +1,21 @@
 package com.example.proyectoandroid.dialogs;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import com.example.proyectoandroid.R;
@@ -22,12 +26,13 @@ import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
 
+import static android.app.Activity.RESULT_OK;
 
 
 public class DialogCrearTransformacionFragment extends DialogFragment implements InterfazDialogFragment {
 
     private TransformacionesAdapter adapter;
-    private ImageView imagen;
+    private ImageView imageView;
     private EditText nombre;
     private Button btnAceptar;
     private Button btnCancelar;
@@ -35,6 +40,7 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
     private Transformacion transformacion;
     private DragonBallSQL dragonBallSQL;
     private ActivityPersonaje activityPersonaje;
+    private Uri pathImagen;
 
 
     public DialogCrearTransformacionFragment(TransformacionesAdapter adapter, Personaje personaje, DragonBallSQL dragonBallSQL, ActivityPersonaje activityPersonaje) {
@@ -61,12 +67,9 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        imagen = (ImageView) view.findViewById(R.id.nuevaFotoTransformacion);
-        nombre = (EditText) view.findViewById(R.id.nuevoNombreTransformacion);
-
         pulsarAceptar(view);
-
         pulsarCancelar(view);
+        pulsarImagen(view);
     }
 
     /**
@@ -75,19 +78,22 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
 
     @Override
     public void pulsarAceptar(View view) {
+        nombre = (EditText) view.findViewById(R.id.nuevoNombreTransformacion);
         btnAceptar = (Button) view.findViewById(R.id.btnCrearTransformacion);
         btnAceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Creo una nueva transformacion
-                //TODO: INSERTAR LA IMAGEN CON SU INT CORRESPONDIENTE
-                transformacion = new Transformacion(nombre.getText().toString(), R.drawable.predeterminado);
+                transformacion = new Transformacion(nombre.getText().toString(), pathImagen);
 
                 //Inserto la transformación en base de datos
                 dragonBallSQL.insertarTransformacion(personaje, transformacion);
 
                 //Actualizo la activity
                 activityPersonaje.actualizarTransformaciones();
+
+                //Creo un Toast para avisar de que se ha creado
+                Toast.makeText(activityPersonaje, "Transformación " + nombre.getText().toString() + " creada con éxito", Toast.LENGTH_SHORT).show();
 
                 //Actualizamos el adapter
                 adapter.notifyDataSetChanged();
@@ -114,11 +120,39 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
     }
 
     /**
-     * TODO: Insertar imagen desde la galeria
+     * Insertar imagen desde la galeria
      */
 
     @Override
     public void pulsarImagen(View view) {
+        imageView = (ImageView) view.findViewById(R.id.nuevaFotoTransformacion);
 
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Creo un intent para darme la opción para acceder a la galería
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                //Le asigno el tipo
+                intent.setType("image/");
+
+                //Lanzo la orden
+                startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 11);
+            }
+        });
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) { //Si está bien
+            //Creamos una URI con los datos recogidos de la galería
+            pathImagen = data.getData();
+
+            //Asignamos la foto al imageView con esa URI
+            imageView.setImageURI(pathImagen);
+        }
+    }
+
 }

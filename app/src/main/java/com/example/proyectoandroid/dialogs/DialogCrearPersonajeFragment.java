@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.proyectoandroid.R;
 import com.example.proyectoandroid.activities.MainActivity;
@@ -95,17 +96,19 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
         btnCrear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Creo un nuevo personaje
-                //TODO: INSERTAR LA IMAGEN CON SU INT CORRESPONDIENTE
+                //Creo un nuevo personaje (Le asigno a la foto completa una iamgen predeterminada, después se
+                //se podrá editar
                 personaje = new Personaje(nombre.getText().toString(), descripcion.getText().toString(),
-                        raza.getText().toString(), ataqueEspecial.getText().toString(), R.drawable.predeterminado, R.drawable.predeterminado);
-
+                        raza.getText().toString(), ataqueEspecial.getText().toString(), path, R.drawable.predeterminado);
 
                 //Inserto el personaje en base de datos
                 personajes.insertarPersonaje(personaje);
 
                 //Actualizo la activity
                 mainActivity.rellenarActivity();
+
+                //Creo un Toast para avisar de que se ha creado
+                Toast.makeText(mainActivity, "Personaje " + nombre.getText().toString() + " creado con éxito", Toast.LENGTH_SHORT).show();
 
                 //Actualizamos con el adapter
                 adapter.notifyDataSetChanged();
@@ -132,7 +135,7 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
     }
 
     /**
-     * TODO: Insertar imagen desde la galeria
+     * Insertar imagen desde la galeria
      */
 
     @Override

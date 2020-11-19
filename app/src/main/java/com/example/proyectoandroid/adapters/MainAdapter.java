@@ -1,6 +1,7 @@
 package com.example.proyectoandroid.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,12 @@ public class MainAdapter extends BaseAdapter {
         TextView nombre = (TextView) v.findViewById(R.id.nombre);
         TextView descripcion = (TextView) v.findViewById(R.id.descripcion);
 
-        foto.setImageResource(currentPersonaje.getFoto());
+        //Si la foto es de tipo Integer, le asigno la ImageResource
+        if (currentPersonaje.getFoto().getClass().getSimpleName().equals("Integer")) {
+            foto.setImageResource((Integer) currentPersonaje.getFoto());
+        } else { //Si la imagen es de la galería, por tanto tipo Uri, le inserto el Uri
+            foto.setImageURI((Uri) currentPersonaje.getFoto());
+        }
         nombre.setText(currentPersonaje.getNombre());
         descripcion.setText(currentPersonaje.getDescripcion());
 

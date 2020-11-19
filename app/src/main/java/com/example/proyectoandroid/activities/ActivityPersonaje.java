@@ -1,12 +1,15 @@
 package com.example.proyectoandroid.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.proyectoandroid.R;
@@ -44,6 +48,7 @@ public class ActivityPersonaje extends AppCompatActivity {
     private TransformacionesAdapter adapter;
     private static final int REQUEST_CODE = 100;
     private DragonBallSQL dragonBallSQL;
+    private Uri path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +57,6 @@ public class ActivityPersonaje extends AppCompatActivity {
 
         //Inicializamos base de datos
         this.dragonBallSQL = MainActivity.dragonBallSQL;
-
-        //TODO: insertar un sonido a cada personaje
-
 
         //Insertamos los datos del personaje
         rellenarCaracteristicas();
@@ -69,7 +71,6 @@ public class ActivityPersonaje extends AppCompatActivity {
         registerForContextMenu(gridView);
 
 
-
     }
 
     /**
@@ -77,9 +78,11 @@ public class ActivityPersonaje extends AppCompatActivity {
      */
 
     private void rellenarCaracteristicas() {
+        //Personaje obtenido por el intent
+        Personaje p = (Personaje) getIntent().getSerializableExtra("personaje");
 
-        //Insertamos el personaje pasado por el intent
-        this.personaje = (Personaje) getIntent().getSerializableExtra("personaje");
+        //Insertamos el personaje pasado por el intent pero conectado a la base de datos
+        this.personaje = dragonBallSQL.getPersonaje(p.getId());
 
         //Almacenamos las variables del layout
         imageViewFoto = findViewById(R.id.fotoCaracteristicas);
@@ -88,7 +91,13 @@ public class ActivityPersonaje extends AppCompatActivity {
         textViewAtaqueEspecial = findViewById(R.id.ataqueEspecialCaracteristicas);
         textViewDescripcion = findViewById(R.id.descripcionCaracteristicas);
 
-        imageViewFoto.setImageResource(personaje.getFotoCompleta());
+        //Código para que se ponga la imagen ya sea integer o Uri
+        if (personaje.getFotoCompleta().getClass().getSimpleName().equals("Integer")) {
+            imageViewFoto.setImageResource((Integer) personaje.getFotoCompleta());
+        } else {
+            imageViewFoto.setImageURI((Uri) personaje.getFotoCompleta());
+        }
+
         textViewNombre.setText(personaje.getNombre());
         textViewRaza.setText("Raza: " + personaje.getRaza());
         textViewAtaqueEspecial.setText("Ataque especial: " + personaje.getAtaqueEspecial());
@@ -100,10 +109,7 @@ public class ActivityPersonaje extends AppCompatActivity {
      */
 
     public void pulsarAtras(View view) {
-        getIntent().getSerializableExtra("lista");
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra("personajeEditado", this.personaje);
-
         startActivityForResult(intent, REQUEST_CODE);
     }
 
@@ -122,7 +128,7 @@ public class ActivityPersonaje extends AppCompatActivity {
         this.transformaciones = dragonBallSQL.getListadoTransformaciones(this.personaje);
 
         //Si este personaje no tienes transformaciones, que aparezca que no tiene en el textView
-        if(this.transformaciones.size() == 0) {
+        if (this.transformaciones.size() == 0) {
             textViewTransformaciones.setText("ESTE PERSONAJE NO TIENE TRANSFORMACIONES");
         } else {
             textViewTransformaciones.setText("TRANSFORMACIONES");
@@ -224,6 +230,10 @@ public class ActivityPersonaje extends AppCompatActivity {
                 dragonBallSQL.borrarTransformacion(currentTransformacion);
                 actualizarTransformaciones();
 
+                //Creo un Toast para avisar de que se ha creado
+                Toast.makeText(ActivityPersonaje.this, "Transformación " +
+                        currentTransformacion.getNombre() + " borrada con éxito", Toast.LENGTH_SHORT).show();
+
                 //Notificamos al adapter
                 adapter.notifyDataSetChanged();
             }
@@ -232,6 +242,37 @@ public class ActivityPersonaje extends AppCompatActivity {
         //Creamos y mostramos el dialogo
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    /**
+     * Método para cuando se pulse la imagen completa, poder cambiarla desde la galería
+     */
+    public void pulsarImagenCompleta(View view) {
+        //Lanzamos la galería para editar la foto
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        //Le asigno el tipo
+        intent.setType("image/");
+
+        //Lanzo la orden
+        startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 10);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) { //Si está bien
+            //Creamos una URI con los datos recogidos de la galería
+            this.path = data.getData();
+
+            //Asignamos la foto al imageView con esa URI
+            imageViewFoto.setImageURI(path);
+
+            //Editamos la foto completa en base de datos
+            this.dragonBallSQL.editarFotoCompleta(path, this.personaje);
+        }
+
     }
 
 }

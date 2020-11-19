@@ -13,12 +13,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import com.example.proyectoandroid.R;
@@ -45,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private FloatingActionButton btnCrearPersonaje;
     private static final int REQUEST_CODE_FUNCTONE = 100;
-    private final int REQUEST_CODE_PERMISOS = 101;
     private SQLiteDatabase db;
 
     //La base de datos la creo estática para que pueda acceder a ella desde la otra activity
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         dragonBallSQL = new DragonBallSQL(this, "DragonBall.db", null, 1);
 
         //Reinicar base de datos
-        //dragonBallSQL.reiniciarDb("DragonBall.db");
+        dragonBallSQL.reiniciarDb("DragonBall.db");
 
         //Rellenamos el activity con el listview
         rellenarActivity();
@@ -77,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Agregamos el metodo para cambiar de activity
         irACaracteristicas(listView);
-
-        //TODO: INSERTAR IMAGEN DESDE LA GALERIA
 
     }
 
@@ -260,6 +260,10 @@ public class MainActivity extends AppCompatActivity {
                 dragonBallSQL.borrarPersonaje(p);
                 rellenarActivity();
 
+                //Creo un Toast para avisar de que se ha creado
+                Toast.makeText(MainActivity.this, "Personaje " + p.getNombre() +
+                        " borrado con éxito", Toast.LENGTH_SHORT).show();
+
                 //Notificamos al adapter
                 adapter.notifyDataSetChanged();
             }
@@ -268,5 +272,26 @@ public class MainActivity extends AppCompatActivity {
         //Creamos y mostramos el dialogo
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void pulsarImagen(View view, ImageView imagen) {
+        //Al pulsar en la imagen:
+        imagen = (ImageView) view.findViewById(R.id.nuevaFoto);
+
+
+        imagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Creo un intent para darme la opción para acceder a la galería
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                //Le asigno el tipo
+                intent.setType("image/");
+
+                //Lanzo la orden
+                startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 10);
+            }
+        });
     }
 }

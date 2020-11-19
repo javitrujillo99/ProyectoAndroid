@@ -1,17 +1,21 @@
 package com.example.proyectoandroid.dialogs;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.proyectoandroid.R;
 import com.example.proyectoandroid.activities.MainActivity;
@@ -20,12 +24,14 @@ import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Personaje;
 
+import static android.app.Activity.RESULT_OK;
+
 
 public class DialogEditarPersonajeFragment extends DialogFragment implements InterfazDialogFragment {
 
     private Button btnAceptar;
     private Button btnCancelar;
-    private ImageView imageView;
+    private ImageView imagen;
     private EditText nombre;
     private EditText descripcion;
     private EditText raza;
@@ -34,6 +40,7 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
     private Personaje personaje;
     private MainActivity mainActivity;
     private DragonBallSQL personajes;
+    private Uri path;
 
 
     public DialogEditarPersonajeFragment(Personaje personaje, MainAdapter adapter, MainActivity mainActivity, DragonBallSQL dragonBallSQL) {
@@ -61,7 +68,7 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        imageView = (ImageView) view.findViewById(R.id.editarFoto);
+        imagen = (ImageView) view.findViewById(R.id.editarFoto);
         nombre = (EditText) view.findViewById(R.id.editarNombre);
         descripcion = (EditText) view.findViewById(R.id.editarDescripcion);
         raza = (EditText) view.findViewById(R.id.editarRaza);
@@ -72,13 +79,20 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
         pulsarAceptar(view);
 
         pulsarCancelar(view);
+
+        pulsarImagen(view);
     }
 
     /**
      * Cargo las características del personaje
      */
     private void cargarCaracteristicas() {
-        imageView.setImageResource(personaje.getFotoCompleta());
+        //Depende del tipo que sea, ya que si insertamos desde galeria será tipo Uri
+        if (personaje.getFoto().getClass().getSimpleName().equals("Integer")) {
+            imagen.setImageResource((Integer) personaje.getFoto());
+        } else {
+            imagen.setImageURI((Uri) personaje.getFoto());
+        }
         nombre.setText(personaje.getNombre());
         descripcion.setText(personaje.getDescripcion());
         raza.setText(personaje.getRaza());
@@ -100,12 +114,17 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
                 personaje.setDescripcion(descripcion.getText().toString());
                 personaje.setRaza(raza.getText().toString());
                 personaje.setAtaqueEspecial(ataqueEspecial.getText().toString());
+                personaje.setFoto(path);
 
                 //Actualizamos el personaje en la base de datos
                 personajes.editarPersonaje(personaje);
 
                 //Actualizamos la activity
                 mainActivity.rellenarActivity();
+
+                //Creo un Toast para avisar de que se ha creado
+                Toast.makeText(mainActivity, "Personaje " + nombre.getText().toString() + " editado con éxito", Toast.LENGTH_SHORT).show();
+
 
                 //Actualizamos con el adapter
                 adapter.notifyDataSetChanged();
@@ -130,11 +149,40 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
     }
 
     /**
-     * TODO: Insertar imagen desde la galeria
+     * Insertar imagen desde la galeria
      */
 
     @Override
     public void pulsarImagen(View view) {
+        //Al pulsar en la imagen:
+        imagen = (ImageView) view.findViewById(R.id.editarFoto);
 
+
+        imagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Creo un intent para darme la opción para acceder a la galería
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                //Le asigno el tipo
+                intent.setType("image/");
+
+                //Lanzo la orden
+                startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 10);
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) { //Si está bien
+            //Creamos una URI con los datos recogidos de la galería
+            this.path = data.getData();
+
+            //Asignamos la foto al imageView con esa URI
+            imagen.setImageURI(path);
+        }
     }
 }

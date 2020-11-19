@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -40,24 +41,24 @@ public class DragonBallSQL extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         //definimos la sentencia de creación de una tabla
         String sentenciaCreacionPersonajes = "CREATE TABLE personajes (id INTEGRER PRIMARY KEY, nombre TEXT, descripcion TEXT," +
-                "raza TEXT, ataqueEspecial TEXT, foto INTEGER, fotoCompleta INTEGER);";
+                "raza TEXT, ataqueEspecial TEXT, foto TEXT, fotoCompleta TEXT);";
 
         //Creamos la tabla transformaciones, que está relacionada con los personajes
-        String sentenciaCreacionTranformaciones = "CREATE TABLE transformaciones (id INTEGER PRIMARY KEY, nombre TEXT, foto INTEGER, id_personaje INTEGER, FOREIGN KEY(id_personaje) REFERENCES personajes(id))";
+        String sentenciaCreacionTranformaciones = "CREATE TABLE transformaciones (id INTEGER PRIMARY KEY, nombre TEXT, foto TEXT, id_personaje INTEGER, FOREIGN KEY(id_personaje) REFERENCES personajes(id))";
 
         //Ejecutamos las sentencias
         db.execSQL(sentenciaCreacionPersonajes);
         db.execSQL(sentenciaCreacionTranformaciones);
 
         //Inicializo la base de datos con algunos datos
-        String sentenciaInsertPersonajes =  "INSERT INTO personajes VALUES" +
+        String sentenciaInsertPersonajes = "INSERT INTO personajes VALUES" +
                 "(1, 'Goku', 'Son Gokū es el protagonista del manga y anime Dragon Ball creado por Akira Toriyama.', 'Saiyan', 'Kamehameha', " + R.drawable.goku + ", " + R.drawable.goku_completa + ")," +
                 "(2, 'Gohan', 'Son Gohan es un personaje del manga y anime Dragon Ball creado por Akira Toriyama. Es el primer hijo de Son Gokū y Chi-Chi', 'Humano - Saiyan', 'Masenko', " + R.drawable.gohan + ", " + R.drawable.gohan_completa + ")," +
                 "(3, 'Goten', 'Goten es un personaje ficticio de la serie de manga y anime Dragon Ball. Segundo hijo del protagonista, Goku, y Chichi/Milk.', 'Humano - Saiyan', 'Kamehameha', " + R.drawable.goten + ", " + R.drawable.goten_completa + ")," +
                 "(4, 'Krilin', 'Krilin es un personaje de la serie de manga y anime Dragon Ball. Es el primer rival en artes marciales de Son Gokū aunque luego se convierte en su mejor amigo.', 'Humano', 'Kienzan', " + R.drawable.krilin + ", " + R.drawable.krilin_completa + ")," +
                 "(5, 'Piccolo', 'Piccolo es un personaje de ficción de la serie de manga y anime Dragon Ball. Su padre, Piccolo Daimaō, surgió tras separarse de Kamisama.', 'Namekiano', 'Makankosappo', " + R.drawable.piccolo + ", " + R.drawable.piccolo_completa + ")," +
                 "(6, 'Trunks', 'Trunks es un personaje de ficción de la serie de manga y anime Dragon Ball de Akira Toriyama. Hijo de Vegeta y Bulma.', 'Humano - Saiyan', 'Kamehameha', " + R.drawable.trunks + ", " + R.drawable.trunks_completa + ")," +
-                "(7, 'Vegeta', 'Vegeta es un personaje ficticio perteneciente a la raza llamada saiyajin, del manga y anime Dragon Ball.', 'Saiyan', 'Final Flash', " + R.drawable.vegeta + ", " + R.drawable.vegeta_completa + ")" ;
+                "(7, 'Vegeta', 'Vegeta es un personaje ficticio perteneciente a la raza llamada saiyajin, del manga y anime Dragon Ball.', 'Saiyan', 'Final Flash', " + R.drawable.vegeta + ", " + R.drawable.vegeta_completa + ")";
 
         String sentenciaInsertTransformaciones = "INSERT INTO transformaciones VALUES" +
                 "(1, 'Super Saiyan 1', " + R.drawable.goku_ssj1 + ", 1)," +
@@ -106,6 +107,56 @@ public class DragonBallSQL extends SQLiteOpenHelper {
     }
 
     /**
+     * Método para obtener un personaje a través de su ID
+     */
+    public Personaje getPersonaje(int id) {
+        db = getWritableDatabase();
+
+        //Definimos el personaje que vamos a devolver
+        Personaje personaje = new Personaje();
+
+        //Campos para buscar en la tabla
+        String[] CAMPOS = {"*"};
+
+        //Cláusula WHERE para buscar el personaje del que queremos sacar las transformaciones
+        String WHERE = "id = " + id;
+
+        //Cursor
+        Cursor cursor = db.query("personajes", CAMPOS, WHERE, null, null, null, null, null);
+
+        //Mientras existan resultados seguiremos recorriendo los resultados de la consulta
+        int i = 0;
+        if (cursor.getCount() > 0)
+            while (cursor.moveToNext()) {
+                //Añadimos los resultados al personaje
+                personaje.setId(cursor.getInt(0));
+                personaje.setNombre(cursor.getString(1));
+                personaje.setDescripcion(cursor.getString(2));
+                personaje.setRaza(cursor.getString(3));
+                personaje.setAtaqueEspecial(cursor.getString(4));
+                //Si recibo un entero en el objeto Object, le asigno el Integer
+                if (cursor.getInt(5) != 0) {
+                    personaje.setFoto(cursor.getInt(5));
+                } else { //Si no, es porque recibo un Uri de la galeria
+                    personaje.setFoto(Uri.parse(cursor.getString(5)));
+                }
+                //Si recibo un entero en el objeto Object, le asigno el Integer
+                if (cursor.getInt(6) != 0) {
+                    personaje.setFotoCompleta(cursor.getInt(6));
+                } else { //Si no, es porque recibo un Uri de la galeria
+                    personaje.setFotoCompleta(Uri.parse(cursor.getString(6)));
+                }
+
+            }
+
+        // Cerramos la conexión
+        db.close();
+
+        // Se devuleven los resultados
+        return personaje;
+    }
+
+    /**
      * Método para agregar un personaje a la base de datos
      */
     public void insertarPersonaje(Personaje p) {
@@ -113,10 +164,11 @@ public class DragonBallSQL extends SQLiteOpenHelper {
         indicePersonajes = obtenerUltimoIndice("personajes");
 
         SQLiteDatabase db = getWritableDatabase();
+
         if (db != null) {
-            String sentenciaInsertar = "INSERT INTO personajes VALUES (" + indicePersonajes + ", '" + p.getNombre()+ "'," +
-                    "'" + p.getDescripcion()+ "', '" + p.getRaza()+ "', '" + p.getAtaqueEspecial()+ "'," +
-                    "" + p.getFoto()+ ", " + p.getFotoCompleta()+ ")";
+            String sentenciaInsertar = "INSERT INTO personajes VALUES (" + indicePersonajes + ", '" + p.getNombre() + "'," +
+                    "'" + p.getDescripcion() + "', '" + p.getRaza() + "', '" + p.getAtaqueEspecial() + "'," +
+                    "'" + p.getFoto() + "', " + p.getFotoCompleta() + ")";
 
             //Ejecutamos la consulta
             db.execSQL(sentenciaInsertar);
@@ -170,7 +222,13 @@ public class DragonBallSQL extends SQLiteOpenHelper {
                 p.setDescripcion(cursor.getString(2));
                 p.setRaza(cursor.getString(3));
                 p.setAtaqueEspecial(cursor.getString(4));
-                p.setFoto(cursor.getInt(5));
+
+                //Si recibo un entero del Object, le asigno el Integer
+                if (cursor.getInt(5) != 0) {
+                    p.setFoto(cursor.getInt(5));
+                } else { //Si recibo un Uri porque es de la galería, le asigno el Uri
+                    p.setFoto(Uri.parse(cursor.getString(5)));
+                }
                 p.setFotoCompleta(cursor.getInt(6));
 
                 //cargamos el array principal con el resultado acual
@@ -190,10 +248,10 @@ public class DragonBallSQL extends SQLiteOpenHelper {
     public void editarPersonaje(Personaje p) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            String sentenciaEditar = "UPDATE personajes SET nombre = '" + p.getNombre()+ "', descripcion = " +
-                    "'" + p.getDescripcion()+ "', raza = '" + p.getRaza()+ "" + "', ataqueEspecial = '" +
-                    "" + p.getAtaqueEspecial()+ "', foto = '" +
-                    "" + p.getFoto()+ "', fotoCompleta = '" + p.getFotoCompleta()+ "' WHERE id = " + p.getId() + ";";
+            String sentenciaEditar = "UPDATE personajes SET nombre = '" + p.getNombre() + "', descripcion = " +
+                    "'" + p.getDescripcion() + "', raza = '" + p.getRaza() + "" + "', ataqueEspecial = '" +
+                    "" + p.getAtaqueEspecial() + "', foto = '" +
+                    "" + p.getFoto() + "', fotoCompleta = '" + p.getFotoCompleta() + "' WHERE id = " + p.getId() + ";";
 
             //Ejecutamos la consulta
             db.execSQL(sentenciaEditar);
@@ -233,7 +291,7 @@ public class DragonBallSQL extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             String sentenciaInsertar = "INSERT INTO transformaciones VALUES (" + indiceTransformaciones + "," +
-              " '" + transformacion.getNombre()+ "'," + transformacion.getFoto()+ ", " + personaje.getId()+ ")";
+                    " '" + transformacion.getNombre() + "', '" + transformacion.getFoto() + "', " + personaje.getId() + ")";
 
             //Ejecutamos la consulta
             db.execSQL(sentenciaInsertar);
@@ -271,7 +329,12 @@ public class DragonBallSQL extends SQLiteOpenHelper {
                 //Añadimos los resultados al personaje
                 t.setId(cursor.getInt(0));
                 t.setNombre(cursor.getString(1));
-                t.setFoto(cursor.getInt(2));
+                //Si recibo un entero en el objeto Object, le asigno el Integer
+                if (cursor.getInt(2) != 0) {
+                    t.setFoto(cursor.getInt(2));
+                } else { //Si no, es porque recibo un Uri de la galeria
+                    t.setFoto(Uri.parse(cursor.getString(2)));
+                }
                 t.setId_usuario(cursor.getInt(3));
 
                 //cargamos el array principal con el resultado acual
@@ -307,8 +370,25 @@ public class DragonBallSQL extends SQLiteOpenHelper {
     public void editarTransformacion(Transformacion transformacion) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            String sentenciaEditar = "UPDATE transformaciones SET nombre = '" + transformacion.getNombre()+
-                    "', foto = " + transformacion.getFoto() + " WHERE id = " + transformacion.getId() + ";";
+            String sentenciaEditar = "UPDATE transformaciones SET nombre = '" + transformacion.getNombre() +
+                    "', foto = '" + transformacion.getFoto() + "' WHERE id = " + transformacion.getId() + ";";
+
+            //Ejecutamos la consulta
+            db.execSQL(sentenciaEditar);
+
+            //Cerramos la conexión
+            db.close();
+        }
+    }
+
+    /**
+     * Método para editar la foto completa
+     */
+    public void editarFotoCompleta(Uri path, Personaje personaje) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            String sentenciaEditar = "UPDATE personajes SET fotoCompleta = '" + path + "' WHERE " +
+                    "id = " +  personaje.getId() + ";";
 
             //Ejecutamos la consulta
             db.execSQL(sentenciaEditar);

@@ -1,6 +1,7 @@
 package com.example.proyectoandroid.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +63,11 @@ public class TransformacionesAdapter extends BaseAdapter {
         ImageView fotoTransformacion = (ImageView) v.findViewById(R.id.imagenTransformacion);
         TextView nombreTransformacion = (TextView) v.findViewById(R.id.nombreTransformacion);
 
-        fotoTransformacion.setImageResource(currentTransformacion.getFoto());
+        if (currentTransformacion.getFoto().getClass().getSimpleName().equals("Integer")) {
+            fotoTransformacion.setImageResource((Integer) currentTransformacion.getFoto());
+        } else {
+            fotoTransformacion.setImageURI((Uri) currentTransformacion.getFoto());
+        }
         nombreTransformacion.setText(currentTransformacion.getNombre());
 
         return v;

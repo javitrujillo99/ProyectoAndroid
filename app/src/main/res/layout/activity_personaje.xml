@@ -47,6 +47,7 @@
                 android:id="@+id/fotoCaracteristicas"
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
+                android:onClick="pulsarImagenCompleta"
                 android:src="@drawable/predeterminado" />
 
             <LinearLayout

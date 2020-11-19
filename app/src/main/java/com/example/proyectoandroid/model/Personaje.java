@@ -1,6 +1,8 @@
 package com.example.proyectoandroid.model;
 
 
+import android.net.Uri;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,8 @@ public class Personaje implements Serializable {
     private int id;
     private String nombre;
     private String descripcion;
-    private int foto;
-    private int fotoCompleta;
+    private Object foto; //Lo declaro con Object porque a veces será integer y otras veces Uri
+    private Object fotoCompleta;
     private String raza;
     private String ataqueEspecial;
 
@@ -30,29 +32,11 @@ public class Personaje implements Serializable {
 
     }
 
-
     /**
-     * Constructor con atributos con id
+     * Contructor con atributos y foto int
      */
 
-    public Personaje(int id, String nombre, String descripcion, String raza, String ataqueEspecial, int foto, int fotoCompleta) {
-        this.id = id;
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.raza = raza;
-        this.ataqueEspecial = ataqueEspecial;
-        this.foto = foto;
-        this.fotoCompleta = fotoCompleta;
-    }
-
-    /**
-     * Contructor con atributos sin id
-     * @param nombre
-     * @param descripcion
-     * @param foto
-     */
-
-    public Personaje(String nombre, String descripcion, String raza, String ataqueEspecial, int foto, int fotoCompleta) {
+    public Personaje(String nombre, String descripcion, String raza, String ataqueEspecial, Object foto, Object fotoCompleta) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.raza = raza;
@@ -108,19 +92,20 @@ public class Personaje implements Serializable {
         this.ataqueEspecial = ataqueEspecial;
     }
 
-    public int getFoto() {
+    public Object getFoto() {
         return foto;
     }
 
-    public void setFoto(int foto) {
+    public void setFoto(Object foto) {
         this.foto = foto;
     }
 
-    public int getFotoCompleta() {
+
+    public Object getFotoCompleta() {
         return fotoCompleta;
     }
 
-    public void setFotoCompleta(int fotoCompleta) {
+    public void setFotoCompleta(Object fotoCompleta) {
         this.fotoCompleta = fotoCompleta;
     }
 
