@@ -27,7 +27,8 @@
         android:src="@drawable/logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnAtras"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/imagen_logo" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -48,7 +49,8 @@
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
                 android:onClick="pulsarImagenCompleta"
-                android:src="@drawable/predeterminado" />
+                android:src="@drawable/predeterminado"
+                android:contentDescription="@string/imagen_personaje" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -62,7 +64,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="15dp"
-                    android:text="Nombre"
+                    android:text="@string/nombre"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
@@ -75,7 +77,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
-                    android:text="Raza " />
+                    android:text="@string/raza" />
 
                 <TextView
                     android:id="@+id/ataqueEspecialCaracteristicas"
@@ -86,16 +88,16 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
-                    android:text="Ataque especial " />
+                    android:text="@string/ataque_especial" />
 
                 <TextView
                     android:id="@+id/descripcionCaracteristicas"
-                    android:textSize="18dp"
+                    android:textSize="18sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:text="Descripcion " />
+                    android:text="@string/descripcion" />
             </LinearLayout>
 
         </LinearLayout>
@@ -107,9 +109,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="TRANSFORMACIONES"
+        android:text="@string/transformaciones"
         android:textColor="#DD0A0A"
-        android:textSize="30dp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/gridViewTransformaciones"
         app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +141,10 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_insertar" />
+        app:srcCompat="@drawable/ic_insertar"
+        android:contentDescription="@string/floatingbutton_crear_transformacion"
+        android:focusable="true"
+        tools:ignore="VectorDrawableCompat" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

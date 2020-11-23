@@ -27,21 +27,19 @@ import com.example.proyectoandroid.model.Transformacion;
 import static android.app.Activity.RESULT_OK;
 
 
+@SuppressWarnings("deprecation")
 @SuppressLint("ValidFragment")
 public class DialogEditarTransformacionFragment extends DialogFragment implements InterfazDialogFragment {
 
-    private Button btnAceptar;
-    private Button btnCancelar;
     private ImageView imagen;
     private EditText nombre;
-    private TransformacionesAdapter adapter;
-    private Transformacion transformacion;
-    private ActivityPersonaje activityPersonaje;
-    private DragonBallSQL dragonBallSQL;
+    private final TransformacionesAdapter adapter;
+    private final Transformacion transformacion;
+    private final ActivityPersonaje activityPersonaje;
+    private final DragonBallSQL dragonBallSQL;
     private Uri path;
 
 
-    @SuppressLint("ValidFragment")
     public DialogEditarTransformacionFragment(Transformacion transformacion, TransformacionesAdapter adapter, ActivityPersonaje activityPersonaje, DragonBallSQL dragonBallSQL) {
         //Le paso al constructor el personaje que queremos editar y el adapter para editarlo
         this.transformacion = transformacion;
@@ -67,8 +65,8 @@ public class DialogEditarTransformacionFragment extends DialogFragment implement
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        imagen = (ImageView) view.findViewById(R.id.editarFotoTransformacion);
-        nombre = (EditText) view.findViewById(R.id.editarNombreTransformacion);
+        imagen = view.findViewById(R.id.editarFotoTransformacion);
+        nombre = view.findViewById(R.id.editarNombreTransformacion);
 
         cargarCaracteristicas();
 
@@ -94,75 +92,63 @@ public class DialogEditarTransformacionFragment extends DialogFragment implement
 
     /**
      *
-     * @param view
      */
     @Override
     public void pulsarAceptar(View view) {
         //Cuando pulse aceptar:
-        btnAceptar = (Button) view.findViewById(R.id.btnEditarTransformacion);
-        btnAceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Cambiamos las caracteristicas de la transformacion a las nuevas
-                transformacion.setNombre(nombre.getText().toString());
-                transformacion.setFoto(path);
+        Button btnAceptar = view.findViewById(R.id.btnEditarTransformacion);
+        btnAceptar.setOnClickListener(v -> {
+            //Cambiamos las caracteristicas de la transformacion a las nuevas
+            transformacion.setNombre(nombre.getText().toString());
+            transformacion.setFoto(path);
 
-                //Actualizamos el personaje en la base de datos
-                dragonBallSQL.editarTransformacion(transformacion);
+            //Actualizamos el personaje en la base de datos
+            dragonBallSQL.editarTransformacion(transformacion);
 
-                //Actualizamos la activity
-                activityPersonaje.actualizarTransformaciones();
+            //Actualizamos la activity
+            activityPersonaje.actualizarTransformaciones();
 
-                //Creo un Toast para avisar de que se ha creado
-                Toast.makeText(activityPersonaje, "Transformación " + nombre.getText().toString() + " editada con éxito", Toast.LENGTH_SHORT).show();
+            //Creo un Toast para avisar de que se ha creado
+            Toast.makeText(activityPersonaje, "Transformación " + nombre.getText().toString() + " editada con éxito", Toast.LENGTH_SHORT).show();
 
 
-                //Actualizamos con el adapter
-                adapter.notifyDataSetChanged();
-                dismiss(); //Cerramos el dialogo
-            }
+            //Actualizamos con el adapter
+            adapter.notifyDataSetChanged();
+            dismiss(); //Cerramos el dialogo
         });
     }
 
     /**
      *
-     * @param view
      */
     @Override
     public void pulsarCancelar(View view) {
         //Cuando pulse cancelar:
-        btnCancelar = (Button) view.findViewById(R.id.btnCancelarEditarTransformacion);
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        Button btnCancelar = view.findViewById(R.id.btnCancelarEditarTransformacion);
+        btnCancelar.setOnClickListener(v -> dismiss());
     }
 
 
     /**
      * Insertar imagen desde la galeria
      */
+    @SuppressLint("IntentReset")
     @Override
     public void pulsarImagen(View view) {
         //Al pulsar en la imagen:
-        imagen = (ImageView) view.findViewById(R.id.editarFotoTransformacion);
+        imagen = view.findViewById(R.id.editarFotoTransformacion);
 
 
-        imagen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Creo un intent para darme la opción para acceder a la galería
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagen.setOnClickListener(v -> {
+            //Creo un intent para darme la opción para acceder a la galería
+            @SuppressLint("IntentReset") Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                //Le asigno el tipo
-                intent.setType("image/");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //Le asigno el tipo
+            intent.setType("image/");
 
-                //Lanzo la orden
-                startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 10);
-            }
+            //Lanzo la orden
+            startActivityForResult(Intent.createChooser(intent, "Selecciona aplicación"), 10);
         });
     }
 

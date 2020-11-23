@@ -1,5 +1,6 @@
 package com.example.proyectoandroid.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -18,20 +19,15 @@ import java.util.List;
 public class MainAdapter extends BaseAdapter {
 
     //Creamos un contexto, layout e inyectamos la lista
-    private Context context;
-    private int layout;
-    private List<Personaje> personajes;
+    private final Context context;
+    private final List<Personaje> personajes;
 
 
     /**
      * Constructor
-     * @param context
-     * @param layout
-     * @param personajes
      */
-    public MainAdapter(Context context, int layout, List<Personaje> personajes) {
+    public MainAdapter(Context context, List<Personaje> personajes) {
         this.context = context;
-        this.layout = layout;
         this.personajes = personajes;
     }
 
@@ -50,10 +46,11 @@ public class MainAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint({"ViewHolder", "InflateParams"})
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //Llamamos a la vista
-        View v = convertView;
+        View v;
 
         //Inflamos el layout a nuestro contexto
         LayoutInflater inflater = LayoutInflater.from(this.context);
@@ -63,9 +60,9 @@ public class MainAdapter extends BaseAdapter {
         Personaje currentPersonaje = personajes.get(position);
 
         //Colocamos cada atributo del personaje en su layout correspondiente
-        ImageView foto = (ImageView) v.findViewById(R.id.foto);
-        TextView nombre = (TextView) v.findViewById(R.id.nombre);
-        TextView descripcion = (TextView) v.findViewById(R.id.descripcion);
+        ImageView foto = v.findViewById(R.id.foto);
+        TextView nombre = v.findViewById(R.id.nombre);
+        TextView descripcion = v.findViewById(R.id.descripcion);
 
         //Si la foto es de tipo Integer, le asigno la ImageResource
         if (currentPersonaje.getFoto().getClass().getSimpleName().equals("Integer")) {

@@ -1,5 +1,6 @@
 package com.example.proyectoandroid.dialogs;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,17 +30,15 @@ import static android.app.Activity.RESULT_OK;
 
 public class DialogEditarPersonajeFragment extends DialogFragment implements InterfazDialogFragment {
 
-    private Button btnAceptar;
-    private Button btnCancelar;
     private ImageView imagen;
     private EditText nombre;
     private EditText descripcion;
     private EditText raza;
     private EditText ataqueEspecial;
-    private MainAdapter adapter;
-    private Personaje personaje;
-    private MainActivity mainActivity;
-    private DragonBallSQL personajes;
+    private final MainAdapter adapter;
+    private final Personaje personaje;
+    private final MainActivity mainActivity;
+    private final DragonBallSQL personajes;
     private Uri path;
 
 
@@ -68,11 +67,11 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        imagen = (ImageView) view.findViewById(R.id.editarFoto);
-        nombre = (EditText) view.findViewById(R.id.editarNombre);
-        descripcion = (EditText) view.findViewById(R.id.editarDescripcion);
-        raza = (EditText) view.findViewById(R.id.editarRaza);
-        ataqueEspecial = (EditText) view.findViewById(R.id.editarAtaqueEspecial);
+        imagen = view.findViewById(R.id.editarFoto);
+        nombre = view.findViewById(R.id.editarNombre);
+        descripcion = view.findViewById(R.id.editarDescripcion);
+        raza = view.findViewById(R.id.editarRaza);
+        ataqueEspecial = view.findViewById(R.id.editarAtaqueEspecial);
 
         cargarCaracteristicas();
 
@@ -101,76 +100,64 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
 
     /**
      *
-     * @param view
      */
     public void pulsarAceptar(View view) {
         //Cuando pulse aceptar:
-        btnAceptar = (Button) view.findViewById(R.id.btnAceptar);
-        btnAceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Cambiamos las caracteristicas del personaje a las escritas en el EditText
-                personaje.setNombre(nombre.getText().toString());
-                personaje.setDescripcion(descripcion.getText().toString());
-                personaje.setRaza(raza.getText().toString());
-                personaje.setAtaqueEspecial(ataqueEspecial.getText().toString());
-                personaje.setFoto(path);
+        Button btnAceptar = view.findViewById(R.id.btnAceptar);
+        btnAceptar.setOnClickListener(v -> {
+            //Cambiamos las caracteristicas del personaje a las escritas en el EditText
+            personaje.setNombre(nombre.getText().toString());
+            personaje.setDescripcion(descripcion.getText().toString());
+            personaje.setRaza(raza.getText().toString());
+            personaje.setAtaqueEspecial(ataqueEspecial.getText().toString());
+            personaje.setFoto(path);
 
-                //Actualizamos el personaje en la base de datos
-                personajes.editarPersonaje(personaje);
+            //Actualizamos el personaje en la base de datos
+            personajes.editarPersonaje(personaje);
 
-                //Actualizamos la activity
-                mainActivity.rellenarActivity();
+            //Actualizamos la activity
+            mainActivity.rellenarActivity();
 
-                //Creo un Toast para avisar de que se ha creado
-                Toast.makeText(mainActivity, "Personaje " + nombre.getText().toString() + " editado con éxito", Toast.LENGTH_SHORT).show();
+            //Creo un Toast para avisar de que se ha creado
+            Toast.makeText(mainActivity, "Personaje " + nombre.getText().toString() + " editado con éxito", Toast.LENGTH_SHORT).show();
 
 
-                //Actualizamos con el adapter
-                adapter.notifyDataSetChanged();
-                dismiss(); //Cerramos el dialogo
-            }
+            //Actualizamos con el adapter
+            adapter.notifyDataSetChanged();
+            dismiss(); //Cerramos el dialogo
         });
     }
 
     /**
      *
-     * @param view
      */
     public void pulsarCancelar(View view) {
         //Cuando pulse cancelar:
-        btnCancelar = (Button) view.findViewById(R.id.btnCancelar);
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        Button btnCancelar = view.findViewById(R.id.btnCancelar);
+        btnCancelar.setOnClickListener(v -> dismiss());
     }
 
     /**
      * Insertar imagen desde la galeria
      */
 
+    @SuppressLint("IntentReset")
     @Override
     public void pulsarImagen(View view) {
         //Al pulsar en la imagen:
-        imagen = (ImageView) view.findViewById(R.id.editarFoto);
+        imagen = view.findViewById(R.id.editarFoto);
 
 
-        imagen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Creo un intent para darme la opción para acceder a la galería
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagen.setOnClickListener(v -> {
+            //Creo un intent para darme la opción para acceder a la galería
+            @SuppressLint("IntentReset") Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                //Le asigno el tipo
-                intent.setType("image/");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //Le asigno el tipo
+            intent.setType("image/");
 
-                //Lanzo la orden
-                startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 10);
-            }
+            //Lanzo la orden
+            startActivityForResult(Intent.createChooser(intent, "Selecciona aplicación"), 10);
         });
     }
 

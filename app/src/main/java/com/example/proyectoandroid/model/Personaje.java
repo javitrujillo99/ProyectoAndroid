@@ -1,16 +1,7 @@
 package com.example.proyectoandroid.model;
 
 
-import android.net.Uri;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-// Implementa Serializable para poder pasar el objeto a otra activity, que es una clase que sirve solamente
-// para especificar que el estado de un objeto instanciado podrá ser escrito o enviado en la red como una trama
-// de bytes.
-public class Personaje implements Serializable {
+public class Personaje {
 
     //Atributos del personaje
     private int id;
@@ -21,8 +12,7 @@ public class Personaje implements Serializable {
     private String raza;
     private String ataqueEspecial;
 
-    //Inicializamos la lista para que no de problemas de NullPointerException
-    private List<Transformacion> transformaciones = new ArrayList<Transformacion>();
+    //El personaje tiene dentro una lista de transformaciones, pero lo hago con bases de datos
 
 
     /**
@@ -49,7 +39,6 @@ public class Personaje implements Serializable {
 
     /**
      * Getters y setters
-     * @return
      */
 
     public int getId() {
@@ -109,11 +98,4 @@ public class Personaje implements Serializable {
         this.fotoCompleta = fotoCompleta;
     }
 
-    public List<Transformacion> getTransformaciones() {
-        return transformaciones;
-    }
-
-    public void setTransformaciones(List<Transformacion> transformaciones) {
-        this.transformaciones = transformaciones;
-    }
 }

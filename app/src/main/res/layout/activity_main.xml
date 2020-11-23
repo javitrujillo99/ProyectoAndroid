@@ -15,7 +15,10 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_insertar" />
+        app:srcCompat="@drawable/ic_insertar"
+        tools:ignore="VectorDrawableCompat"
+        android:contentDescription="@string/floatingbutton_crear_personaje"
+        android:focusable="true" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -30,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:src="@drawable/logo"
-             />
+            android:contentDescription="@string/imagen_logo" />
 
     </androidx.appcompat.widget.Toolbar>
 

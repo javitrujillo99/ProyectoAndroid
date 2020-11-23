@@ -1,5 +1,6 @@
 package com.example.proyectoandroid.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -18,17 +19,14 @@ import java.util.List;
 public class TransformacionesAdapter extends BaseAdapter {
 
     //Variables
-    private Context context;
-    private int layout;
-    private List<Transformacion> transformaciones;
-    private Transformacion currentTransformacion;
+    private final Context context;
+    private final List<Transformacion> transformaciones;
 
     /**
      * Constructor
      */
-    public TransformacionesAdapter(Context context, int layout, List<Transformacion> transformaciones) {
+    public TransformacionesAdapter(Context context, List<Transformacion> transformaciones) {
         this.context = context;
-        this.layout = layout;
         this.transformaciones = transformaciones;
     }
 
@@ -47,21 +45,22 @@ public class TransformacionesAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint({"InflateParams", "ViewHolder"})
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //Llamamos a la vista
-        View v = convertView;
+        View v;
 
         //Inflamos el layout a nuestro contexto
         LayoutInflater inflater = LayoutInflater.from(this.context);
         v = inflater.inflate(R.layout.transformaciones, null);
 
         //Obtenemos la transformacion de cada recorrido de la lista
-        currentTransformacion = transformaciones.get(position);
+        Transformacion currentTransformacion = transformaciones.get(position);
 
         //Colocamos el nombre y la imagen
-        ImageView fotoTransformacion = (ImageView) v.findViewById(R.id.imagenTransformacion);
-        TextView nombreTransformacion = (TextView) v.findViewById(R.id.nombreTransformacion);
+        ImageView fotoTransformacion = v.findViewById(R.id.imagenTransformacion);
+        TextView nombreTransformacion = v.findViewById(R.id.nombreTransformacion);
 
         if (currentTransformacion.getFoto().getClass().getSimpleName().equals("Integer")) {
             fotoTransformacion.setImageResource((Integer) currentTransformacion.getFoto());

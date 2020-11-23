@@ -1,11 +1,11 @@
 package com.example.proyectoandroid.databases;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -13,7 +13,6 @@ import com.example.proyectoandroid.R;
 import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class DragonBallSQL extends SQLiteOpenHelper {
     private SQLiteDatabase db;
 
     //Guardamos el context
-    private Context contexto;
+    private final Context contexto;
 
     public int indicePersonajes;
     public int indiceTransformaciones;
@@ -82,9 +81,6 @@ public class DragonBallSQL extends SQLiteOpenHelper {
 
         //copiamos la referencia
         this.db = db;
-
-        //Creamos el dialogo
-        Toast toast = Toast.makeText(contexto, "Se ha creado la base de datos", Toast.LENGTH_LONG);
     }
 
     @Override
@@ -122,10 +118,9 @@ public class DragonBallSQL extends SQLiteOpenHelper {
         String WHERE = "id = " + id;
 
         //Cursor
-        Cursor cursor = db.query("personajes", CAMPOS, WHERE, null, null, null, null, null);
+        @SuppressLint("Recycle") Cursor cursor = db.query("personajes", CAMPOS, WHERE, null, null, null, null, null);
 
         //Mientras existan resultados seguiremos recorriendo los resultados de la consulta
-        int i = 0;
         if (cursor.getCount() > 0)
             while (cursor.moveToNext()) {
                 //Añadimos los resultados al personaje
@@ -168,7 +163,7 @@ public class DragonBallSQL extends SQLiteOpenHelper {
         if (db != null) {
             String sentenciaInsertar = "INSERT INTO personajes VALUES (" + indicePersonajes + ", '" + p.getNombre() + "'," +
                     "'" + p.getDescripcion() + "', '" + p.getRaza() + "', '" + p.getAtaqueEspecial() + "'," +
-                    "'" + p.getFoto() + "', " + p.getFotoCompleta() + ")";
+                    "'" + p.getFoto() + "', '" + p.getFotoCompleta() + "')";
 
             //Ejecutamos la consulta
             db.execSQL(sentenciaInsertar);
@@ -201,16 +196,15 @@ public class DragonBallSQL extends SQLiteOpenHelper {
         db = getWritableDatabase();
 
         //Definimos un array para almacenar los resultados
-        List<Personaje> resultadoConsulta = new ArrayList<Personaje>();
+        List<Personaje> resultadoConsulta = new ArrayList<>();
 
         //Campos para buscar en la tabla
         String[] CAMPOS = {"id", "nombre", "descripcion", "raza", "ataqueEspecial", "foto", "fotoCompleta"};
 
         //Cursor
-        Cursor cursor = db.query("personajes", CAMPOS, null, null, null, null, null, null);
+        @SuppressLint("Recycle") Cursor cursor = db.query("personajes", CAMPOS, null, null, null, null, null, null);
 
         //Mientras existan resultados seguiremos recorriendo los resultados de la consulta
-        int i = 0;
         if (cursor.getCount() > 0)
             while (cursor.moveToNext()) {
                 //Se inicia el array temporal
@@ -229,7 +223,13 @@ public class DragonBallSQL extends SQLiteOpenHelper {
                 } else { //Si recibo un Uri porque es de la galería, le asigno el Uri
                     p.setFoto(Uri.parse(cursor.getString(5)));
                 }
-                p.setFotoCompleta(cursor.getInt(6));
+
+                //Si recibo un entero del Object, le asigno el Integer
+                if (cursor.getInt(6) != 0) {
+                    p.setFotoCompleta(cursor.getInt(6));
+                } else { //Si recibo un Uri porque es de la galería, le asigno el Uri
+                    p.setFotoCompleta(Uri.parse(cursor.getString(6)));
+                }
 
                 //cargamos el array principal con el resultado acual
                 resultadoConsulta.add(p);
@@ -267,9 +267,8 @@ public class DragonBallSQL extends SQLiteOpenHelper {
     public int obtenerUltimoIndice(String nombreTabla) {
         db = this.getWritableDatabase();
         int indiceDevuelto = -1;
-        Cursor cursor = db.query(nombreTabla, null, "id=(SELECT id FROM " + nombreTabla +
+        @SuppressLint("Recycle") Cursor cursor = db.query(nombreTabla, null, "id=(SELECT id FROM " + nombreTabla +
                 " ORDER BY id DESC LIMIT 1)", null, null, null, null);
-        int i = 0;
         if (cursor.getCount() > 0)
             while (cursor.moveToNext()) {
                 indiceDevuelto = cursor.getInt(0);
@@ -308,7 +307,7 @@ public class DragonBallSQL extends SQLiteOpenHelper {
         db = getWritableDatabase();
 
         //Definimos un array para almacenar los resultados
-        List<Transformacion> resultadoConsulta = new ArrayList<Transformacion>();
+        List<Transformacion> resultadoConsulta = new ArrayList<>();
 
         //Campos para buscar en la tabla
         String[] CAMPOS = {"*"};
@@ -317,10 +316,9 @@ public class DragonBallSQL extends SQLiteOpenHelper {
         String WHERE = "id_personaje = " + personaje.getId();
 
         //Cursor
-        Cursor cursor = db.query("transformaciones", CAMPOS, WHERE, null, null, null, null, null);
+        @SuppressLint("Recycle") Cursor cursor = db.query("transformaciones", CAMPOS, WHERE, null, null, null, null, null);
 
         //Mientras existan resultados seguiremos recorriendo los resultados de la consulta
-        int i = 0;
         if (cursor.getCount() > 0)
             while (cursor.moveToNext()) {
                 //Se inicia el array temporal

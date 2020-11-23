@@ -16,17 +16,18 @@
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:src="@drawable/logo"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:contentDescription="@string/imagen_logo" />
 
         <TextView
             android:layout_width="358dp"
             android:layout_height="55dp"
             android:layout_gravity="end"
             android:layout_weight="1"
-            android:text="Editar personaje"
+            android:text="@string/editar_personaje"
             android:gravity="center"
             android:textColor="#ffffff"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 
@@ -43,7 +44,8 @@
                 android:id="@+id/editarFoto"
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/predeterminado" />
+                android:src="@drawable/predeterminado"
+                android:contentDescription="@string/imagen_editar_personaje" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -56,9 +58,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:text="Nombre"
+                    android:text="@string/nombre"
                     android:textSize="25sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:autofillHints=""
+                    android:inputType="text"
+                    tools:ignore="LabelFor" />
 
                 <EditText
                     android:id="@+id/editarRaza"
@@ -68,7 +73,10 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
-                    android:text="Raza" />
+                    android:text="@string/raza"
+                    android:autofillHints=""
+                    android:inputType="text"
+                    tools:ignore="LabelFor" />
 
                 <EditText
                     android:id="@+id/editarAtaqueEspecial"
@@ -78,7 +86,10 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
-                    android:text="Ataque especial" />
+                    android:text="@string/ataque_especial"
+                    android:autofillHints=""
+                    android:inputType="text"
+                    tools:ignore="LabelFor" />
 
                 <EditText
                     android:id="@+id/editarDescripcion"
@@ -87,7 +98,10 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
-                    android:text="Descripcion " />
+                    android:text="@string/descripcion"
+                    android:autofillHints=""
+                    android:inputType="text"
+                    tools:ignore="LabelFor" />
             </LinearLayout>
 
         </LinearLayout>
@@ -105,9 +119,11 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#F5DE00"
             android:textColor="@color/black"
-            android:text="Aceptar"
+            android:text="@string/aceptar"
             android:layout_marginEnd="20dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            tools:ignore="ButtonStyle"
+            tools:targetApi="lollipop" />
 
         <Button
             android:id="@+id/btnCancelar"
@@ -115,8 +131,10 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#BF0012"
             android:textColor="#ffffff"
-            android:text="Cancelar"
-            android:layout_weight="1"/>
+            android:text="@string/cancelar"
+            android:layout_weight="1"
+            tools:targetApi="lollipop"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 

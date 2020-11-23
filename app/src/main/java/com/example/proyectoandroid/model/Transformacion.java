@@ -19,8 +19,6 @@ public class Transformacion implements Serializable{
 
     /**
      * Constructor con atributos
-     * @param nombre
-     * @param foto
      */
     public Transformacion(String nombre, Object foto) {
         this.nombre = nombre;

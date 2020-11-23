@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,25 +30,19 @@ import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class ActivityPersonaje extends AppCompatActivity {
 
     //Variables
     private ImageView imageViewFoto;
-    private TextView textViewNombre;
-    private TextView textViewDescripcion;
-    private TextView textViewRaza;
-    private TextView textViewAtaqueEspecial;
-    private TextView textViewTransformaciones;
-    private FloatingActionButton btnCrearTransformacion;
     private Personaje personaje;
     private List<Transformacion> transformaciones;
     private GridView gridView;
     private TransformacionesAdapter adapter;
     private static final int REQUEST_CODE = 100;
     private DragonBallSQL dragonBallSQL;
-    private Uri path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,18 +72,18 @@ public class ActivityPersonaje extends AppCompatActivity {
      */
 
     private void rellenarCaracteristicas() {
-        //Personaje obtenido por el intent
-        Personaje p = (Personaje) getIntent().getSerializableExtra("personaje");
+        //Id del personaje obtenido por el intent
+        int id = (int) getIntent().getSerializableExtra("id");
 
-        //Insertamos el personaje pasado por el intent pero conectado a la base de datos
-        this.personaje = dragonBallSQL.getPersonaje(p.getId());
+        //Obtenemos el personaje de la base de datos con el id pasado
+        this.personaje = dragonBallSQL.getPersonaje(id);
 
         //Almacenamos las variables del layout
         imageViewFoto = findViewById(R.id.fotoCaracteristicas);
-        textViewNombre = findViewById(R.id.nombreCaracteristicas);
-        textViewRaza = findViewById(R.id.razaCaracteristicas);
-        textViewAtaqueEspecial = findViewById(R.id.ataqueEspecialCaracteristicas);
-        textViewDescripcion = findViewById(R.id.descripcionCaracteristicas);
+        TextView textViewNombre = findViewById(R.id.nombreCaracteristicas);
+        TextView textViewRaza = findViewById(R.id.razaCaracteristicas);
+        TextView textViewAtaqueEspecial = findViewById(R.id.ataqueEspecialCaracteristicas);
+        TextView textViewDescripcion = findViewById(R.id.descripcionCaracteristicas);
 
         //Código para que se ponga la imagen ya sea integer o Uri
         if (personaje.getFotoCompleta().getClass().getSimpleName().equals("Integer")) {
@@ -99,8 +93,8 @@ public class ActivityPersonaje extends AppCompatActivity {
         }
 
         textViewNombre.setText(personaje.getNombre());
-        textViewRaza.setText("Raza: " + personaje.getRaza());
-        textViewAtaqueEspecial.setText("Ataque especial: " + personaje.getAtaqueEspecial());
+        textViewRaza.setText(String.format("%s%s", getString(R.string.insertarRaza), personaje.getRaza()));
+        textViewAtaqueEspecial.setText(String.format("%s%s", getString(R.string.ataque), personaje.getAtaqueEspecial()));
         textViewDescripcion.setText(personaje.getDescripcion());
     }
 
@@ -119,23 +113,23 @@ public class ActivityPersonaje extends AppCompatActivity {
 
     public void actualizarTransformaciones() {
         //Insertamos el textView
-        textViewTransformaciones = (TextView) findViewById(R.id.textViewTransformaciones);
+        TextView textViewTransformaciones = findViewById(R.id.textViewTransformaciones);
 
         //Insertamos el gridview
-        gridView = (GridView) findViewById(R.id.gridViewTransformaciones);
+        gridView = findViewById(R.id.gridViewTransformaciones);
 
         //Insertamos la lista de transformaciones
         this.transformaciones = dragonBallSQL.getListadoTransformaciones(this.personaje);
 
         //Si este personaje no tienes transformaciones, que aparezca que no tiene en el textView
         if (this.transformaciones.size() == 0) {
-            textViewTransformaciones.setText("ESTE PERSONAJE NO TIENE TRANSFORMACIONES");
+            textViewTransformaciones.setText(R.string.noTransformaciones);
         } else {
-            textViewTransformaciones.setText("TRANSFORMACIONES");
+            textViewTransformaciones.setText(R.string.siTransformaciones);
         }
 
         //Inyectamos el adapter
-        adapter = new TransformacionesAdapter(getApplicationContext(), R.layout.transformaciones, this.transformaciones);
+        adapter = new TransformacionesAdapter(getApplicationContext(), this.transformaciones);
         gridView.setAdapter(adapter);
     }
 
@@ -146,13 +140,8 @@ public class ActivityPersonaje extends AppCompatActivity {
 
     private void pulsarBotonFlotante() {
         //Si pulsamos el boton de crear personaje, que muestre el dialogo
-        btnCrearTransformacion = (FloatingActionButton) findViewById(R.id.floatingActionButtonCrearTransformacion);
-        btnCrearTransformacion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                crearTransformacion();
-            }
-        });
+        FloatingActionButton btnCrearTransformacion = findViewById(R.id.floatingActionButtonCrearTransformacion);
+        btnCrearTransformacion.setOnClickListener(v -> crearTransformacion());
     }
 
     /**
@@ -174,8 +163,6 @@ public class ActivityPersonaje extends AppCompatActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        //Recogemos la información con el adapter. Sin esto no sale bien el menú.
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
         //Inflamos el context menu
         MenuInflater inflater = getMenuInflater();
@@ -185,6 +172,7 @@ public class ActivityPersonaje extends AppCompatActivity {
     /**
      * Cuando pulsemos items del context menu
      */
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
 
@@ -224,19 +212,16 @@ public class ActivityPersonaje extends AppCompatActivity {
         builder.setTitle("Eliminar transformación");
         builder.setMessage("¿Estás seguro de que desea eliminar la transformación?");
         builder.setNegativeButton("Cancelar", null);
-        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dragonBallSQL.borrarTransformacion(currentTransformacion);
-                actualizarTransformaciones();
+        builder.setPositiveButton("Aceptar", (dialog, which) -> {
+            dragonBallSQL.borrarTransformacion(currentTransformacion);
+            actualizarTransformaciones();
 
-                //Creo un Toast para avisar de que se ha creado
-                Toast.makeText(ActivityPersonaje.this, "Transformación " +
-                        currentTransformacion.getNombre() + " borrada con éxito", Toast.LENGTH_SHORT).show();
+            //Creo un Toast para avisar de que se ha creado
+            Toast.makeText(ActivityPersonaje.this, "Transformación " +
+                    currentTransformacion.getNombre() + " borrada con éxito", Toast.LENGTH_SHORT).show();
 
-                //Notificamos al adapter
-                adapter.notifyDataSetChanged();
-            }
+            //Notificamos al adapter
+            adapter.notifyDataSetChanged();
         });
 
         //Creamos y mostramos el dialogo
@@ -247,6 +232,7 @@ public class ActivityPersonaje extends AppCompatActivity {
     /**
      * Método para cuando se pulse la imagen completa, poder cambiarla desde la galería
      */
+    @SuppressLint("IntentReset")
     public void pulsarImagenCompleta(View view) {
         //Lanzamos la galería para editar la foto
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -256,7 +242,7 @@ public class ActivityPersonaje extends AppCompatActivity {
         intent.setType("image/");
 
         //Lanzo la orden
-        startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 10);
+        startActivityForResult(Intent.createChooser(intent, "Selecciona aplicación"), 10);
     }
 
     @Override
@@ -264,7 +250,7 @@ public class ActivityPersonaje extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) { //Si está bien
             //Creamos una URI con los datos recogidos de la galería
-            this.path = data.getData();
+            Uri path = data.getData();
 
             //Asignamos la foto al imageView con esa URI
             imageViewFoto.setImageURI(path);

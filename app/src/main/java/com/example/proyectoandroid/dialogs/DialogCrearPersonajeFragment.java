@@ -1,5 +1,6 @@
 package com.example.proyectoandroid.dialogs;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,25 +30,19 @@ import static android.app.Activity.RESULT_OK;
 
 public class DialogCrearPersonajeFragment extends DialogFragment implements InterfazDialogFragment {
 
-    private Button btnCrear;
-    private Button btnCancelar;
     private ImageView imagen;
     private EditText nombre;
     private EditText descripcion;
     private EditText raza;
     private EditText ataqueEspecial;
-    private MainAdapter adapter;
+    private final MainAdapter adapter;
     private Personaje personaje;
-    private DragonBallSQL personajes;
-    private MainActivity mainActivity;
+    private final DragonBallSQL personajes;
+    private final MainActivity mainActivity;
     private Uri path;
 
     /**
      * Constructor
-     *
-     * @param adapter
-     * @param personajes
-     * @param mainActivity
      */
     public DialogCrearPersonajeFragment(MainAdapter adapter, DragonBallSQL personajes, MainActivity mainActivity) {
         // En este caso, le pasamos el adapter y la base de datos, para añadir el personaje creado a ella
@@ -73,11 +68,11 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        imagen = (ImageView) view.findViewById(R.id.nuevaFoto);
-        nombre = (EditText) view.findViewById(R.id.nuevoNombre);
-        descripcion = (EditText) view.findViewById(R.id.nuevaDescripcion);
-        raza = (EditText) view.findViewById(R.id.nuevaRaza);
-        ataqueEspecial = (EditText) view.findViewById(R.id.nuevoAtaqueEspecial);
+        imagen = view.findViewById(R.id.nuevaFoto);
+        nombre = view.findViewById(R.id.nuevoNombre);
+        descripcion = view.findViewById(R.id.nuevaDescripcion);
+        raza = view.findViewById(R.id.nuevaRaza);
+        ataqueEspecial = view.findViewById(R.id.nuevoAtaqueEspecial);
 
         pulsarAceptar(view);
 
@@ -92,30 +87,27 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
      */
     public void pulsarAceptar(View view) {
         //Cuando pulse crear:
-        btnCrear = (Button) view.findViewById(R.id.btnCrear);
-        btnCrear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Creo un nuevo personaje (Le asigno a la foto completa una iamgen predeterminada, después se
-                //se podrá editar
-                personaje = new Personaje(nombre.getText().toString(), descripcion.getText().toString(),
-                        raza.getText().toString(), ataqueEspecial.getText().toString(), path, R.drawable.predeterminado);
+        Button btnCrear = view.findViewById(R.id.btnCrear);
+        btnCrear.setOnClickListener(v -> {
+            //Creo un nuevo personaje (Le asigno a la foto completa una iamgen predeterminada, después se
+            //se podrá editar
+            personaje = new Personaje(nombre.getText().toString(), descripcion.getText().toString(),
+                    raza.getText().toString(), ataqueEspecial.getText().toString(), path, R.drawable.predeterminado);
 
-                //Inserto el personaje en base de datos
-                personajes.insertarPersonaje(personaje);
+            //Inserto el personaje en base de datos
+            personajes.insertarPersonaje(personaje);
 
-                //Actualizo la activity
-                mainActivity.rellenarActivity();
+            //Actualizo la activity
+            mainActivity.rellenarActivity();
 
-                //Creo un Toast para avisar de que se ha creado
-                Toast.makeText(mainActivity, "Personaje " + nombre.getText().toString() + " creado con éxito", Toast.LENGTH_SHORT).show();
+            //Creo un Toast para avisar de que se ha creado
+            Toast.makeText(mainActivity, "Personaje " + nombre.getText().toString() + " creado con éxito", Toast.LENGTH_SHORT).show();
 
-                //Actualizamos con el adapter
-                adapter.notifyDataSetChanged();
+            //Actualizamos con el adapter
+            adapter.notifyDataSetChanged();
 
-                //Cerramos el dialogo
-                dismiss();
-            }
+            //Cerramos el dialogo
+            dismiss();
         });
     }
 
@@ -125,38 +117,31 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
 
     public void pulsarCancelar(View view) {
         //Cuando pulse cancelar:
-        btnCancelar = (Button) view.findViewById(R.id.btnCancelar2);
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        Button btnCancelar = view.findViewById(R.id.btnCancelar2);
+        btnCancelar.setOnClickListener(v -> dismiss());
     }
 
     /**
      * Insertar imagen desde la galeria
      */
 
+    @SuppressLint("IntentReset")
     @Override
     public void pulsarImagen(View view) {
         //Al pulsar en la imagen:
-        imagen = (ImageView) view.findViewById(R.id.nuevaFoto);
+        imagen = view.findViewById(R.id.nuevaFoto);
 
 
-        imagen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Creo un intent para darme la opción para acceder a la galería
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagen.setOnClickListener(v -> {
+            //Creo un intent para darme la opción para acceder a la galería
+            @SuppressLint("IntentReset") Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                //Le asigno el tipo
-                intent.setType("image/");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //Le asigno el tipo
+            intent.setType("image/");
 
-                //Lanzo la orden
-                startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 10);
-            }
+            //Lanzo la orden
+            startActivityForResult(Intent.createChooser(intent, "Selecciona aplicación"), 10);
         });
 
     }

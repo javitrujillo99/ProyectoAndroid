@@ -16,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_weight="1"
-            android:src="@drawable/logo" />
+            android:src="@drawable/logo"
+            android:contentDescription="@string/imagen_logo" />
 
         <TextView
             android:layout_width="358dp"
@@ -24,9 +25,9 @@
             android:layout_gravity="end"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Crear transformación"
+            android:text="@string/crear_transformacion"
             android:textColor="#ffffff"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
 
     </LinearLayout>
 
@@ -44,7 +45,8 @@
                 android:id="@+id/nuevaFotoTransformacion"
                 android:layout_width="110dp"
                 android:layout_height="110dp"
-                android:src="@drawable/predeterminado" />
+                android:src="@drawable/predeterminado"
+                android:contentDescription="@string/imagen_nueva_transformacion" />
 
 
             <EditText
@@ -53,9 +55,11 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:hint="Nombre..."
+                android:hint="@string/nombreHint"
                 android:textSize="25sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:autofillHints=""
+                android:inputType="text" />
 
 
         </LinearLayout>
@@ -75,7 +79,9 @@
             android:layout_weight="1"
             android:backgroundTint="#F5DE00"
             android:textColor="@color/black"
-            android:text="Crear" />
+            android:text="@string/crear"
+            tools:targetApi="lollipop"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/btnCancelarTransformacion"
@@ -83,8 +89,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#BF0012"
-            android:text="Cancelar"
-            android:textColor="#ffffff" />
+            android:text="@string/cancelar"
+            android:textColor="#ffffff"
+            tools:targetApi="lollipop"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 

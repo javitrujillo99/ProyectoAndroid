@@ -17,17 +17,18 @@
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:src="@drawable/logo"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:contentDescription="@string/imagen_logo" />
 
         <TextView
             android:layout_width="358dp"
             android:layout_height="55dp"
             android:layout_gravity="end"
             android:layout_weight="1"
-            android:text="Crear personaje"
+            android:text="@string/crear_personaje"
             android:gravity="center"
             android:textColor="#ffffff"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 
@@ -44,7 +45,8 @@
                 android:id="@+id/nuevaFoto"
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/predeterminado" />
+                android:src="@drawable/predeterminado"
+                android:contentDescription="@string/nueva_foto" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -57,9 +59,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:hint="Nombre..."
+                    android:hint="@string/nombreHint"
                     android:textSize="25sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:autofillHints=""
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/nuevaRaza"
@@ -69,7 +73,9 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
-                    android:hint="Raza..." />
+                    android:hint="@string/razaHint"
+                    android:autofillHints=""
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/nuevoAtaqueEspecial"
@@ -79,7 +85,9 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
-                    android:hint="Ataque especial..." />
+                    android:hint="@string/ataque_especial_hint"
+                    android:autofillHints=""
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/nuevaDescripcion"
@@ -88,7 +96,9 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
-                    android:hint="Descripción..." />
+                    android:hint="@string/descripcionHint"
+                    android:autofillHints=""
+                    android:inputType="text" />
             </LinearLayout>
 
         </LinearLayout>
@@ -102,22 +112,25 @@
 
         <Button
             android:id="@+id/btnCrear"
+            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:layout_weight="1"
-            android:text="Crear"
+            android:text="@string/crear"
             android:textColor="@color/black"
-            app:backgroundTint="#F5DE00" />
+            app:backgroundTint="#F5DE00"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/btnCancelar2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#BF0012"
             android:textColor="#ffffff"
-            android:text="Cancelar"
-            android:layout_weight="1"/>
+            android:text="@string/cancelar"
+            android:layout_weight="1"
+            app:backgroundTint="#BF0012"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 

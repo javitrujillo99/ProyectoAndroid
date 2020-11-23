@@ -1,5 +1,6 @@
 package com.example.proyectoandroid.dialogs;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,15 +32,13 @@ import static android.app.Activity.RESULT_OK;
 
 public class DialogCrearTransformacionFragment extends DialogFragment implements InterfazDialogFragment {
 
-    private TransformacionesAdapter adapter;
+    private final TransformacionesAdapter adapter;
     private ImageView imageView;
     private EditText nombre;
-    private Button btnAceptar;
-    private Button btnCancelar;
-    private Personaje personaje;
+    private final Personaje personaje;
     private Transformacion transformacion;
-    private DragonBallSQL dragonBallSQL;
-    private ActivityPersonaje activityPersonaje;
+    private final DragonBallSQL dragonBallSQL;
+    private final ActivityPersonaje activityPersonaje;
     private Uri pathImagen;
 
 
@@ -78,29 +77,26 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
 
     @Override
     public void pulsarAceptar(View view) {
-        nombre = (EditText) view.findViewById(R.id.nuevoNombreTransformacion);
-        btnAceptar = (Button) view.findViewById(R.id.btnCrearTransformacion);
-        btnAceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Creo una nueva transformacion
-                transformacion = new Transformacion(nombre.getText().toString(), pathImagen);
+        nombre = view.findViewById(R.id.nuevoNombreTransformacion);
+        Button btnAceptar = view.findViewById(R.id.btnCrearTransformacion);
+        btnAceptar.setOnClickListener(v -> {
+            //Creo una nueva transformacion
+            transformacion = new Transformacion(nombre.getText().toString(), pathImagen);
 
-                //Inserto la transformación en base de datos
-                dragonBallSQL.insertarTransformacion(personaje, transformacion);
+            //Inserto la transformación en base de datos
+            dragonBallSQL.insertarTransformacion(personaje, transformacion);
 
-                //Actualizo la activity
-                activityPersonaje.actualizarTransformaciones();
+            //Actualizo la activity
+            activityPersonaje.actualizarTransformaciones();
 
-                //Creo un Toast para avisar de que se ha creado
-                Toast.makeText(activityPersonaje, "Transformación " + nombre.getText().toString() + " creada con éxito", Toast.LENGTH_SHORT).show();
+            //Creo un Toast para avisar de que se ha creado
+            Toast.makeText(activityPersonaje, "Transformación " + nombre.getText().toString() + " creada con éxito", Toast.LENGTH_SHORT).show();
 
-                //Actualizamos el adapter
-                adapter.notifyDataSetChanged();
+            //Actualizamos el adapter
+            adapter.notifyDataSetChanged();
 
-                //Cerramos el dialogo
-                dismiss();
-            }
+            //Cerramos el dialogo
+            dismiss();
         });
     }
 
@@ -110,36 +106,29 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
 
     @Override
     public void pulsarCancelar(View view) {
-        btnCancelar = (Button) view.findViewById(R.id.btnCancelarTransformacion);
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        Button btnCancelar = view.findViewById(R.id.btnCancelarTransformacion);
+        btnCancelar.setOnClickListener(v -> dismiss());
     }
 
     /**
      * Insertar imagen desde la galeria
      */
 
+    @SuppressLint("IntentReset")
     @Override
     public void pulsarImagen(View view) {
-        imageView = (ImageView) view.findViewById(R.id.nuevaFotoTransformacion);
+        imageView = view.findViewById(R.id.nuevaFotoTransformacion);
 
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Creo un intent para darme la opción para acceder a la galería
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imageView.setOnClickListener(v -> {
+            //Creo un intent para darme la opción para acceder a la galería
+            @SuppressLint("IntentReset") Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                //Le asigno el tipo
-                intent.setType("image/");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //Le asigno el tipo
+            intent.setType("image/");
 
-                //Lanzo la orden
-                startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 11);
-            }
+            //Lanzo la orden
+            startActivityForResult(Intent.createChooser(intent, "Selecciona aplicación"), 11);
         });
     }
 

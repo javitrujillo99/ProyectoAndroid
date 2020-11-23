@@ -6,20 +6,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,14 +25,12 @@ import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.dialogs.DialogCrearPersonajeFragment;
 import com.example.proyectoandroid.dialogs.DialogEditarPersonajeFragment;
 import com.example.proyectoandroid.model.Personaje;
-import com.example.proyectoandroid.model.Transformacion;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.example.proyectoandroid.R.*;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,24 +38,22 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private List<Personaje> personajes;
     private MainAdapter adapter;
-    private Toolbar toolbar;
-    private FloatingActionButton btnCrearPersonaje;
     private static final int REQUEST_CODE_FUNCTONE = 100;
-    private SQLiteDatabase db;
 
     //La base de datos la creo estática para que pueda acceder a ella desde la otra activity
+    @SuppressLint("StaticFieldLeak")
     public static DragonBallSQL dragonBallSQL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(layout.activity_main);
 
         //Inicializamos la base de datos
         dragonBallSQL = new DragonBallSQL(this, "DragonBall.db", null, 1);
 
         //Reinicar base de datos
-        dragonBallSQL.reiniciarDb("DragonBall.db");
+        //dragonBallSQL.reiniciarDb("DragonBall.db");
 
         //Rellenamos el activity con el listview
         rellenarActivity();
@@ -74,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         registerForContextMenu(listView);
 
         //Agregamos la toolbar personalizada
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(id.toolbar);
         setSupportActionBar(toolbar);
 
         //Agregamos el metodo para cambiar de activity
@@ -88,16 +79,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void rellenarActivity() {
         //Creamos conexion con la base de datos
-        db = dragonBallSQL.getWritableDatabase();
+        SQLiteDatabase db = dragonBallSQL.getWritableDatabase();
+
+        String provider = "android.provider.MediaStore";
 
         //Insertamos el ListView en la activity
-        listView = (ListView) findViewById(R.id.listView);
+        listView = findViewById(id.listView);
 
         //Creamos la lista de personajes que aparecerá en la vista
         this.personajes = dragonBallSQL.getListadoPersonajes();
 
         //Inyectamos el adapter
-        adapter = new MainAdapter(this, R.layout.lista, personajes);
+        adapter = new MainAdapter(this, personajes);
         listView.setAdapter(adapter);
 
         //Cerramos la conexion
@@ -110,20 +103,17 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void irACaracteristicas(ListView listView) {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Personaje currentPersonaje = personajes.get(position);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Personaje currentPersonaje = personajes.get(position);
 
-                //Creamos el Intent explicito, y le decimos que vaya desde aqui hasta la activity 2
-                Intent intent = new Intent(getApplicationContext(), ActivityPersonaje.class);
+            //Creamos el Intent explicito, y le decimos que vaya desde aqui hasta la activity 2
+            Intent intent = new Intent(getApplicationContext(), ActivityPersonaje.class);
 
-                //Insertamos el personaje que de la lista (importante que implemente el Serializable)
-                intent.putExtra("personaje", currentPersonaje);
+            //Insertamos el id del personaje que pulsemos, luego cargaremos el personaje desde base de datos
+            intent.putExtra("id", currentPersonaje.getId());
 
-                //Lanzamos la activity (IMPORTANTE)
-                startActivityForResult(intent, REQUEST_CODE_FUNCTONE);
-            }
+            //Lanzamos la activity (IMPORTANTE)
+            startActivityForResult(intent, REQUEST_CODE_FUNCTONE);
         });
     }
 
@@ -144,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * MENU
+    /*
+      MENU
 
      Originalmente mi idea era hacer un botón de añadir personaje en el menú. Finalmente he hecho un botón flotante,
      me ha parecido una mejor opción.
@@ -176,13 +166,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void pulsarBotonFlotante() {
         //Si pulsamos el boton de crear personaje, que muestre el dialogo
-        btnCrearPersonaje = (FloatingActionButton) findViewById(R.id.floatingActionButtonCrearPersonaje);
-        btnCrearPersonaje.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                crearPersonaje();
-            }
-        });
+        FloatingActionButton btnCrearPersonaje = findViewById(id.floatingActionButtonCrearPersonaje);
+        btnCrearPersonaje.setOnClickListener(v -> crearPersonaje());
     }
 
     /**
@@ -190,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void crearPersonaje() {
         //Le paso la mainActivity para poder acceder al metodo rellenarActivity()
-        DialogCrearPersonajeFragment dialog = new DialogCrearPersonajeFragment(this.adapter, this.dragonBallSQL, this);
+        DialogCrearPersonajeFragment dialog = new DialogCrearPersonajeFragment(this.adapter, dragonBallSQL, this);
         dialog.show(getSupportFragmentManager(), "DialogoCrearPersonaje");
     }
 
@@ -202,9 +187,6 @@ public class MainActivity extends AppCompatActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        //Recogemos la información con el adapter. Sin esto no sale bien el menú.
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-
         //Inflamos el context menu
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
@@ -213,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Cuando pulsemos items del context menu
      */
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
 
@@ -224,10 +207,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Creamos el switch con todas las opciones del context menu
         switch (item.getItemId()) {
-            case R.id.editar:
+            case id.editar:
                 editarPersonaje(currentPersonaje);
                 return true;
-            case R.id.borrar:
+            case id.borrar:
                 confirmarBorrarPersonaje(currentPersonaje);
                 return true;
             default:
@@ -237,11 +220,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Editamos el personaje
-     * @param personaje
      */
     private void editarPersonaje(Personaje personaje) {
         //Le paso el personaje que vamos a editar y los parametros necesarios
-        DialogEditarPersonajeFragment dialog = new DialogEditarPersonajeFragment(personaje, this.adapter, this, this.dragonBallSQL);
+        DialogEditarPersonajeFragment dialog = new DialogEditarPersonajeFragment(personaje, this.adapter, this, dragonBallSQL);
         dialog.show(getSupportFragmentManager(), "DialogoEditarPersonaje");
     }
 
@@ -254,44 +236,20 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Eliminar personaje");
         builder.setMessage("¿Estás seguro de que desea eliminar el personaje?");
         builder.setNegativeButton("Cancelar", null);
-        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dragonBallSQL.borrarPersonaje(p);
-                rellenarActivity();
+        builder.setPositiveButton("Aceptar", (dialog, which) -> {
+            dragonBallSQL.borrarPersonaje(p);
+            rellenarActivity();
 
-                //Creo un Toast para avisar de que se ha creado
-                Toast.makeText(MainActivity.this, "Personaje " + p.getNombre() +
-                        " borrado con éxito", Toast.LENGTH_SHORT).show();
+            //Creo un Toast para avisar de que se ha creado
+            Toast.makeText(MainActivity.this, "Personaje " + p.getNombre() +
+                    " borrado con éxito", Toast.LENGTH_SHORT).show();
 
-                //Notificamos al adapter
-                adapter.notifyDataSetChanged();
-            }
+            //Notificamos al adapter
+            adapter.notifyDataSetChanged();
         });
 
         //Creamos y mostramos el dialogo
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-    public void pulsarImagen(View view, ImageView imagen) {
-        //Al pulsar en la imagen:
-        imagen = (ImageView) view.findViewById(R.id.nuevaFoto);
-
-
-        imagen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Creo un intent para darme la opción para acceder a la galería
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                //Le asigno el tipo
-                intent.setType("image/");
-
-                //Lanzo la orden
-                startActivityForResult(intent.createChooser(intent, "Selecciona aplicación"), 10);
-            }
-        });
     }
 }

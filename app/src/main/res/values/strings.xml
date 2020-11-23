@@ -1,5 +1,35 @@
 <resources>
     <string name="app_name">ProyectoAndroid_DragonBall</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="insertarRaza">\Raza: \</string>
+    <string name="ataque">\Ataque especial: \</string>
+    <string name="noTransformaciones">ESTE PERSONAJE NO TIENE TRANSFORMACIONES</string>
+    <string name="siTransformaciones">TRANSFORMACIONES</string>
+    <string name="floatingbutton_crear_personaje">FloatingButton crear personaje</string>
+    <string name="imagen_logo">Imagen logo</string>
+    <string name="imagen_personaje">Imagen personaje</string>
+    <string name="nombre">Nombre</string>
+    <string name="raza">Raza</string>
+    <string name="ataque_especial">Ataque especial</string>
+    <string name="descripcion">Descripción</string>
+    <string name="transformaciones">TRANSFORMACIONES</string>
+    <string name="floatingbutton_crear_transformacion">FloatingButton crear transformación</string>
+    <string name="crear_personaje">Crear personaje</string>
+    <string name="nueva_foto">Nueva foto</string>
+    <string name="nombreHint">Nombre…</string>
+    <string name="razaHint">Raza…</string>
+    <string name="ataque_especial_hint">Ataque especial…</string>
+    <string name="descripcionHint">Descripción…</string>
+    <string name="crear">Crear</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="crear_transformacion">Crear transformación</string>
+    <string name="imagen_nueva_transformacion">Imagen nueva transformación</string>
+    <string name="editar_personaje">Editar personaje</string>
+    <string name="imagen_editar_personaje">Imagen editar personaje</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="editar_transformacion">Editar transformación</string>
+    <string name="imagen_editar_transformacion">Imagen editar transformación</string>
+    <string name="editar">Editar</string>
+    <string name="imagen_transformacion">Imagen transformación</string>
+    <string name="borrar">Borrar</string>
 </resources>
