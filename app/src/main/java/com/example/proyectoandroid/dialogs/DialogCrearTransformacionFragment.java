@@ -40,6 +40,7 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
     private final DragonBallSQL dragonBallSQL;
     private final ActivityPersonaje activityPersonaje;
     private Uri pathImagen;
+    private boolean isCrearTransformacionClicked = false;
 
 
     public DialogCrearTransformacionFragment(TransformacionesAdapter adapter, Personaje personaje, DragonBallSQL dragonBallSQL, ActivityPersonaje activityPersonaje) {
@@ -114,6 +115,7 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
      * Insertar imagen desde la galeria
      */
 
+
     @SuppressLint("IntentReset")
     @Override
     public void pulsarImagen(View view) {
@@ -127,6 +129,9 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
             //Le asigno el tipo
             intent.setType("image/");
 
+            //Pongo el boolean de pulsar en la imagen en true
+            this.isCrearTransformacionClicked = true;
+
             //Lanzo la orden
             startActivityForResult(Intent.createChooser(intent, "Selecciona aplicación"), 11);
         });
@@ -135,12 +140,15 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) { //Si está bien
+        if (resultCode == RESULT_OK && isCrearTransformacionClicked) { //Si está bien
             //Creamos una URI con los datos recogidos de la galería
             pathImagen = data.getData();
 
             //Asignamos la foto al imageView con esa URI
             imageView.setImageURI(pathImagen);
+
+            //Vuelvo a poner la bandera en false
+            this.isCrearTransformacionClicked = false;
         }
     }
 

@@ -22,6 +22,7 @@ public class MainAdapter extends BaseAdapter {
     private final Context context;
     private final List<Personaje> personajes;
 
+    public Uri uri;
 
     /**
      * Constructor
@@ -69,6 +70,7 @@ public class MainAdapter extends BaseAdapter {
             foto.setImageResource((Integer) currentPersonaje.getFoto());
         } else { //Si la imagen es de la galería, por tanto tipo Uri, le inserto el Uri
             foto.setImageURI((Uri) currentPersonaje.getFoto());
+            this.uri = (Uri) currentPersonaje.getFoto();
         }
         nombre.setText(currentPersonaje.getNombre());
         descripcion.setText(currentPersonaje.getDescripcion());

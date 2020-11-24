@@ -30,7 +30,6 @@ import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class ActivityPersonaje extends AppCompatActivity {
@@ -43,6 +42,11 @@ public class ActivityPersonaje extends AppCompatActivity {
     private TransformacionesAdapter adapter;
     private static final int REQUEST_CODE = 100;
     private DragonBallSQL dragonBallSQL;
+
+    //Este boolean lo creo porque tengo un onActivityResult aquí y en el DialogFragment que también
+    //pertenece a esta activity, entonces me chocaban los 2 onActivityResult, y creando estos boolean
+    //se soluciona
+    private boolean isEditarFotoCompletaClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,6 +245,9 @@ public class ActivityPersonaje extends AppCompatActivity {
         //Le asigno el tipo
         intent.setType("image/");
 
+        //Ponemos la bandera en true en el boolean de hacer click en esa imagen
+        this.isEditarFotoCompletaClicked = true;
+
         //Lanzo la orden
         startActivityForResult(Intent.createChooser(intent, "Selecciona aplicación"), 10);
     }
@@ -248,7 +255,7 @@ public class ActivityPersonaje extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) { //Si está bien
+        if (resultCode == RESULT_OK && isEditarFotoCompletaClicked) { //Si está bien
             //Creamos una URI con los datos recogidos de la galería
             Uri path = data.getData();
 
@@ -257,6 +264,9 @@ public class ActivityPersonaje extends AppCompatActivity {
 
             //Editamos la foto completa en base de datos
             this.dragonBallSQL.editarFotoCompleta(path, this.personaje);
+
+            //Volvemos a poner el boolean en falso
+            this.isEditarFotoCompletaClicked = false;
         }
 
     }

@@ -5,9 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         dragonBallSQL = new DragonBallSQL(this, "DragonBall.db", null, 1);
 
         //Reinicar base de datos
-        //dragonBallSQL.reiniciarDb("DragonBall.db");
+        dragonBallSQL.reiniciarDb("DragonBall.db");
 
         //Rellenamos el activity con el listview
         rellenarActivity();
@@ -80,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
     public void rellenarActivity() {
         //Creamos conexion con la base de datos
         SQLiteDatabase db = dragonBallSQL.getWritableDatabase();
-
-        String provider = "android.provider.MediaStore";
 
         //Insertamos el ListView en la activity
         listView = findViewById(id.listView);
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, REQUEST_CODE_FUNCTONE);
         });
     }
+
 
 
     /**

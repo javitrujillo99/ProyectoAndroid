@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">ProyectoAndroid_DragonBall</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="insertarRaza">\Raza: \</string>
     <string name="ataque">\Ataque especial: \</string>
     <string name="noTransformaciones">ESTE PERSONAJE NO TIENE TRANSFORMACIONES</string>

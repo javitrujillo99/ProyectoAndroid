@@ -89,7 +89,6 @@ public class Personaje {
         this.foto = foto;
     }
 
-
     public Object getFotoCompleta() {
         return fotoCompleta;
     }
