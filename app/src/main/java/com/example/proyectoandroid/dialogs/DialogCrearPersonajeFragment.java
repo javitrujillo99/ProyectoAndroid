@@ -25,6 +25,8 @@ import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Personaje;
 
+import java.util.Objects;
+
 import static android.app.Activity.RESULT_OK;
 
 
@@ -131,6 +133,8 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
         //Al pulsar en la imagen:
         imagen = view.findViewById(R.id.nuevaFoto);
 
+        //Asigno permisos
+        mainActivity.asignarPermisos();
 
         imagen.setOnClickListener(v -> {
             //Creo un intent para darme la opción para acceder a la galería
@@ -151,7 +155,7 @@ public class DialogCrearPersonajeFragment extends DialogFragment implements Inte
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) { //Si está bien
             //Creamos una URI con los datos recogidos de la galería
-            this.path = data.getData();
+            this.path = Objects.requireNonNull(data).getData();
 
             //Asignamos la foto al imageView con esa URI
             imagen.setImageURI(path);

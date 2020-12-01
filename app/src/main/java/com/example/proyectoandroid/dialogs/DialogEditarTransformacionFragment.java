@@ -24,6 +24,8 @@ import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Transformacion;
 
+import java.util.Objects;
+
 import static android.app.Activity.RESULT_OK;
 
 
@@ -100,6 +102,9 @@ public class DialogEditarTransformacionFragment extends DialogFragment implement
         btnAceptar.setOnClickListener(v -> {
             //Cambiamos las caracteristicas de la transformacion a las nuevas
             transformacion.setNombre(nombre.getText().toString());
+
+            //En caso de que se haya elegido una de la galería la inserto
+            if (this.path != null)
             transformacion.setFoto(path);
 
             //Actualizamos el personaje en la base de datos
@@ -138,6 +143,8 @@ public class DialogEditarTransformacionFragment extends DialogFragment implement
         //Al pulsar en la imagen:
         imagen = view.findViewById(R.id.editarFotoTransformacion);
 
+        //Nos aseguramos de que los permisos están dados
+        activityPersonaje.asignarPermisos();
 
         imagen.setOnClickListener(v -> {
             //Creo un intent para darme la opción para acceder a la galería
@@ -157,7 +164,7 @@ public class DialogEditarTransformacionFragment extends DialogFragment implement
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) { //Si está bien
             //Creamos una URI con los datos recogidos de la galería
-            this.path = data.getData();
+            this.path = Objects.requireNonNull(data).getData();
 
             //Asignamos la foto al imageView con esa URI
             imagen.setImageURI(path);

@@ -25,6 +25,8 @@ import com.example.proyectoandroid.databases.DragonBallSQL;
 import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Personaje;
 
+import java.util.Objects;
+
 import static android.app.Activity.RESULT_OK;
 
 
@@ -110,6 +112,9 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
             personaje.setDescripcion(descripcion.getText().toString());
             personaje.setRaza(raza.getText().toString());
             personaje.setAtaqueEspecial(ataqueEspecial.getText().toString());
+
+            //En caso de que se haya elegido una de la galería la inserto
+            if (this.path != null)
             personaje.setFoto(path);
 
             //Actualizamos el personaje en la base de datos
@@ -147,6 +152,8 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
         //Al pulsar en la imagen:
         imagen = view.findViewById(R.id.editarFoto);
 
+        //Nos aseguramos de que los permisos están dados
+        mainActivity.asignarPermisos();
 
         imagen.setOnClickListener(v -> {
             //Creo un intent para darme la opción para acceder a la galería
@@ -166,7 +173,7 @@ public class DialogEditarPersonajeFragment extends DialogFragment implements Int
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) { //Si está bien
             //Creamos una URI con los datos recogidos de la galería
-            this.path = data.getData();
+            this.path = Objects.requireNonNull(data).getData();
 
             //Asignamos la foto al imageView con esa URI
             imagen.setImageURI(path);

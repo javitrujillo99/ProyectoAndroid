@@ -27,6 +27,8 @@ import com.example.proyectoandroid.interfaces.InterfazDialogFragment;
 import com.example.proyectoandroid.model.Personaje;
 import com.example.proyectoandroid.model.Transformacion;
 
+import java.util.Objects;
+
 import static android.app.Activity.RESULT_OK;
 
 
@@ -121,6 +123,9 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
     public void pulsarImagen(View view) {
         imageView = view.findViewById(R.id.nuevaFotoTransformacion);
 
+        //Nos aseguramos de que los permisos están dados
+        activityPersonaje.asignarPermisos();
+
         imageView.setOnClickListener(v -> {
             //Creo un intent para darme la opción para acceder a la galería
             @SuppressLint("IntentReset") Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -142,7 +147,7 @@ public class DialogCrearTransformacionFragment extends DialogFragment implements
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && isCrearTransformacionClicked) { //Si está bien
             //Creamos una URI con los datos recogidos de la galería
-            pathImagen = data.getData();
+            pathImagen = Objects.requireNonNull(data).getData();
 
             //Asignamos la foto al imageView con esa URI
             imageView.setImageURI(pathImagen);

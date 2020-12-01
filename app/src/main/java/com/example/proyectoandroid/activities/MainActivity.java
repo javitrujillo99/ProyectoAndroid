@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Personaje> personajes;
     private MainAdapter adapter;
     private static final int REQUEST_CODE_FUNCTONE = 100;
+    private static final int REQUEST_CODE_GALLERY = 1000;
 
     //La base de datos la creo estática para que pueda acceder a ella desde la otra activity
     @SuppressLint("StaticFieldLeak")
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         dragonBallSQL = new DragonBallSQL(this, "DragonBall.db", null, 1);
 
         //Reinicar base de datos
-        dragonBallSQL.reiniciarDb("DragonBall.db");
+        //dragonBallSQL.reiniciarDb("DragonBall.db");
 
         //Rellenamos el activity con el listview
         rellenarActivity();
@@ -118,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, REQUEST_CODE_FUNCTONE);
         });
     }
-
 
 
     /**
@@ -254,5 +254,18 @@ public class MainActivity extends AppCompatActivity {
         //Creamos y mostramos el dialogo
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    /**
+     * Asignamos permisos
+     */
+    public void asignarPermisos() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}
+                    , REQUEST_CODE_GALLERY);
+        }
     }
 }

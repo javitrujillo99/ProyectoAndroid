@@ -4,9 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,6 +35,7 @@ import com.example.proyectoandroid.model.Transformacion;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ActivityPersonaje extends AppCompatActivity {
 
@@ -257,7 +262,7 @@ public class ActivityPersonaje extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && isEditarFotoCompletaClicked) { //Si está bien
             //Creamos una URI con los datos recogidos de la galería
-            Uri path = data.getData();
+            Uri path = Objects.requireNonNull(data).getData();
 
             //Asignamos la foto al imageView con esa URI
             imageViewFoto.setImageURI(path);
@@ -269,6 +274,19 @@ public class ActivityPersonaje extends AppCompatActivity {
             this.isEditarFotoCompletaClicked = false;
         }
 
+    }
+
+    /**
+     * Asignamos permisos
+     */
+    public void asignarPermisos() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}
+                    , 1000);
+        }
     }
 
 }
